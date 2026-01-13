@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24px" height="24px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+  <title>ระบบยืมคืน</title>
+  <g fill="none" stroke="#6366F1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Book shape -->
+    <path d="M4,4 L4,20 L20,20 L20,4 Z" />
+    <!-- Pages -->
+    <path d="M8,8 L16,8 M8,12 L16,12 M8,16 L12,16" />
+    <!-- Arrows representing lending/returning -->
+    <path d="M2,7 L6,7 M6,5 L8,7 L6,9" fill="#8B5CF6" />
+    <path d="M22,17 L18,17 M18,15 L16,17 L18,19" fill="#8B5CF6" />
+  </g>
+</svg>

@@ -1,0 +1,46 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "Node.js backend for fullstack application",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "db:setup": "node setup-database.js",
+    "db:seed": "node seed-database.js",
+    "db:reset": "node setup-database.js && node seed-database.js",
+    "db:init": "npm run db:setup && npm run db:seed",
+    "update:serials": "node update-serial-numbers.js",
+    "test:cron": "node test-cron.js"
+  },
+  "dependencies": {
+    "@fontsource/noto-sans-thai": "^5.2.8",
+    "@fontsource/sarabun": "^5.2.8",
+    "@react-pdf/renderer": "^4.3.1",
+    "bcrypt": "^6.0.0",
+    "bcryptjs": "^3.0.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.6.1",
+    "exceljs": "^4.4.0",
+    "express": "^4.21.2",
+    "express-rate-limit": "^8.2.1",
+    "express-session": "^1.18.2",
+    "express-validator": "^7.3.1",
+    "fontkit": "^2.0.2",
+    "jsonwebtoken": "^9.0.2",
+    "morgan": "^1.10.1",
+    "multer": "^2.0.2",
+    "mysql2": "^3.15.1",
+    "node-cron": "^4.2.1",
+    "pdfkit": "^0.17.2",
+    "sequelize": "^6.37.7",
+    "uuid": "^13.0.0",
+    "winston": "^3.19.0",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "axios": "^1.13.2",
+    "form-data": "^4.0.5",
+    "nodemon": "^3.1.11"
+  }
+}

@@ -78,7 +78,8 @@ async function initializeDatabase() {
     logger.info('✅ เชื่อมต่อฐานข้อมูล Sequelize สำเร็จ');
     
     const models = require('./models');
-    await sequelize.sync({ force: false });
+    // ใช้ alter: true เพื่อสร้าง tables ใหม่ถ้ายังไม่มี
+    await sequelize.sync({ alter: true });
     logger.info('✅ ซิงค์โครงสร้างฐานข้อมูลสำเร็จ');
     
     // เริ่มต้น Cron Jobs

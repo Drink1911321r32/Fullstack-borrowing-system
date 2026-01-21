@@ -143,14 +143,14 @@ const createReturnTransaction = async (req, res) => {
         [borrow.member_id]
       );
 
-      // คืนเครดิตที่ถูกหักตอนยืม
+      // คืนเครดิตที่ถูกหักตอนยืม (อนุญาตให้เกิน 100 ถ้าจำเป็น)
       await connection.query(
-        'UPDATE members SET credit = LEAST(credit + ?, 100) WHERE member_id = ?',
+        'UPDATE members SET credit = credit + ? WHERE member_id = ?',
         [borrowedCredit, borrow.member_id]
       );
 
-      // คำนวณ balance หลังคืนเครดิต (จำกัดไม่เกิน 100)
-      let balanceAfterReturn = Math.min(currentUser[0].credit + borrowedCredit, 100);
+      // คำนวณ balance หลังคืนเครดิต
+      let balanceAfterReturn = currentUser[0].credit + borrowedCredit;
 
       const returnDescription = isUsingFallbackCredit
         ? `คืนเครดิต: ${equipment[0].equipment_name} ${returnQty} ชิ้น [⚠️ ใช้เครดิตปัจจุบัน - ข้อมูลเก่าไม่มี credit_deducted]`
@@ -192,11 +192,11 @@ const createReturnTransaction = async (req, res) => {
         const totalPenaltyPaid = parseFloat(borrow.accumulated_penalty) || 0;
         
         await connection.query(
-          'UPDATE members SET credit = GREATEST(credit - ?, 0) WHERE member_id = ?',
+          'UPDATE members SET credit = credit - ? WHERE member_id = ?',
           [totalPenaltyPaid, borrow.member_id]
         );
 
-        const balanceAfterPenalty = Math.max(currentUser[0].credit - totalPenaltyPaid, 0);
+        const balanceAfterPenalty = currentUser[0].credit - totalPenaltyPaid;
 
         await connection.query(
           `INSERT INTO credit_transactions 
@@ -250,11 +250,11 @@ const createReturnTransaction = async (req, res) => {
         );
 
         await connection.query(
-          'UPDATE members SET credit = GREATEST(credit - ?, 0) WHERE member_id = ?',
+          'UPDATE members SET credit = credit - ? WHERE member_id = ?',
           [latePenalty, borrow.member_id]
         );
 
-        const balanceAfterLatePenalty = Math.max(currentUser[0].credit - latePenalty, 0);
+        const balanceAfterLatePenalty = currentUser[0].credit - latePenalty;
 
         await connection.query(
           `INSERT INTO credit_transactions 
@@ -310,11 +310,11 @@ const createReturnTransaction = async (req, res) => {
       );
 
       await connection.query(
-        'UPDATE members SET credit = GREATEST(credit - ?, 0) WHERE member_id = ?',
+        'UPDATE members SET credit = credit - ? WHERE member_id = ?',
         [otherPenalties, borrow.member_id]
       );
 
-      const balanceAfterOther = Math.max(currentUser[0].credit - otherPenalties, 0);
+      const balanceAfterOther = currentUser[0].credit - otherPenalties;
 
       await connection.query(
         `INSERT INTO credit_transactions 
@@ -399,7 +399,8 @@ const createReturnTransaction = async (req, res) => {
           'returned', 
           adminId, 
           borrowing_id, 
-          `คืนโดย: ${borrow.member_id} ${returnStatus}${damage_description ? ` (${damage_description})` : ''}`
+          `คืนโดย: ${borrow.member_id} ${returnStatus}${damage_description ? ` (${damage_description})` : ''}`,
+          true // isAdmin = true
         );
         
         // อัพเดทสถานะ item เป็น available

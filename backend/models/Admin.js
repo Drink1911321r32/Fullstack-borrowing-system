@@ -84,10 +84,6 @@ const Admin = sequelize.define('Admin', {
       fields: ['status']
     }
   ]
-}, {
-  tableName: 'admins',
-  underscored: true,
-  timestamps: true
 });
 
 module.exports = Admin;

@@ -2,7 +2,7 @@ const { pool } = require('../config/db');
 const { BorrowingTransactionItem } = require('../models');
 const { notifyEquipmentReturned, notifyCreditChange } = require('../utils/notificationHelper');
 const { addItemHistory } = require('./equipmentItemController');
-const { getPenaltyCreditPerDay } = require('../utils');
+const { getPenaltyCreditPerHour } = require('../utils');
 
 /**
  * คืนอุปกรณ์รายชิ้น (Return specific items)
@@ -139,9 +139,10 @@ const returnBorrowedItems = async (req, res) => {
       await addItemHistory(
         item_id,
         'returned',
-        transaction.member_id,
+        adminId,
         transaction_id,
-        damageItem ? `คืนพร้อมความเสียหาย: ${damageItem.damage_description}` : 'คืนปกติ'
+        damageItem ? `คืนพร้อมความเสียหาย: ${damageItem.damage_description}` : 'คืนปกติ',
+        true // isAdmin = true
       );
     }
 
@@ -173,7 +174,7 @@ const returnBorrowedItems = async (req, res) => {
     // หักค่าปรับ (ถ้ามี)
     if (totalPenalty > 0) {
       await connection.query(
-        'UPDATE members SET credit = GREATEST(credit - ?, 0) WHERE member_id = ?',
+        'UPDATE members SET credit = credit - ? WHERE member_id = ?',
         [totalPenalty, transaction.member_id]
       );
 

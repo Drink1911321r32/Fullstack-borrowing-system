@@ -347,11 +347,11 @@ const generateInventoryExcel = async (equipmentList) => {
         equipment.type_name || '-',
         statusThai[equipment.status] || equipment.status || '-',
         equipment.credit || 0,
-        equipment.quantity || 0,
-        equipment.available_quantity || 0,
-        equipment.borrowed_quantity || 0,
-        equipment.maintenance_quantity || 0,
-        equipment.damaged_quantity || 0
+        equipment.actual_quantity || equipment.quantity || 0,
+        equipment.quantity_available || 0,
+        equipment.quantity_borrowed || 0,
+        equipment.quantity_maintenance || equipment.quantity_repairing || 0,
+        equipment.quantity_damaged || 0
       ]);
     });
 
@@ -378,11 +378,11 @@ const generateInventoryExcel = async (equipmentList) => {
         equipment.type_name || '-',
         statusThai[equipment.status] || equipment.status || '-',
         equipment.credit || 0,
-        equipment.quantity || 0,
-        equipment.available_quantity || 0,
-        equipment.borrowed_quantity || 0,
-        equipment.maintenance_quantity || 0,
-        equipment.damaged_quantity || 0
+        equipment.actual_quantity || equipment.quantity || 0,
+        equipment.quantity_available || 0,
+        equipment.quantity_borrowed || 0,
+        equipment.quantity_maintenance || equipment.quantity_repairing || 0,
+        equipment.quantity_damaged || 0
       ]);
     });
 
@@ -403,29 +403,29 @@ const generateInventoryExcel = async (equipmentList) => {
     summarySheet.addRow([
       'ยืม-คืน',
       loanEquipment.length,
-      loanEquipment.reduce((sum, eq) => sum + (parseInt(eq.quantity) || 0), 0),
-      loanEquipment.reduce((sum, eq) => sum + (parseInt(eq.available_quantity) || 0), 0),
-      loanEquipment.reduce((sum, eq) => sum + (parseInt(eq.borrowed_quantity) || 0), 0),
-      loanEquipment.reduce((sum, eq) => sum + (parseInt(eq.maintenance_quantity) || 0), 0),
-      loanEquipment.reduce((sum, eq) => sum + (parseInt(eq.damaged_quantity) || 0), 0)
+      loanEquipment.reduce((sum, eq) => sum + (parseInt(eq.actual_quantity || eq.quantity) || 0), 0),
+      loanEquipment.reduce((sum, eq) => sum + (parseInt(eq.quantity_available) || 0), 0),
+      loanEquipment.reduce((sum, eq) => sum + (parseInt(eq.quantity_borrowed) || 0), 0),
+      loanEquipment.reduce((sum, eq) => sum + (parseInt(eq.quantity_maintenance || eq.quantity_repairing) || 0), 0),
+      loanEquipment.reduce((sum, eq) => sum + (parseInt(eq.quantity_damaged) || 0), 0)
     ]);
     summarySheet.addRow([
       'เบิกจ่าย',
       disbursementEquipment.length,
-      disbursementEquipment.reduce((sum, eq) => sum + (parseInt(eq.quantity) || 0), 0),
-      disbursementEquipment.reduce((sum, eq) => sum + (parseInt(eq.available_quantity) || 0), 0),
-      disbursementEquipment.reduce((sum, eq) => sum + (parseInt(eq.borrowed_quantity) || 0), 0),
-      disbursementEquipment.reduce((sum, eq) => sum + (parseInt(eq.maintenance_quantity) || 0), 0),
-      disbursementEquipment.reduce((sum, eq) => sum + (parseInt(eq.damaged_quantity) || 0), 0)
+      disbursementEquipment.reduce((sum, eq) => sum + (parseInt(eq.actual_quantity || eq.quantity) || 0), 0),
+      disbursementEquipment.reduce((sum, eq) => sum + (parseInt(eq.quantity_available) || 0), 0),
+      disbursementEquipment.reduce((sum, eq) => sum + (parseInt(eq.quantity_borrowed) || 0), 0),
+      disbursementEquipment.reduce((sum, eq) => sum + (parseInt(eq.quantity_maintenance || eq.quantity_repairing) || 0), 0),
+      disbursementEquipment.reduce((sum, eq) => sum + (parseInt(eq.quantity_damaged) || 0), 0)
     ]);
     summarySheet.addRow([
       'รวมทั้งหมด',
       equipmentList.length,
-      equipmentList.reduce((sum, eq) => sum + (parseInt(eq.quantity) || 0), 0),
-      equipmentList.reduce((sum, eq) => sum + (parseInt(eq.available_quantity) || 0), 0),
-      equipmentList.reduce((sum, eq) => sum + (parseInt(eq.borrowed_quantity) || 0), 0),
-      equipmentList.reduce((sum, eq) => sum + (parseInt(eq.maintenance_quantity) || 0), 0),
-      equipmentList.reduce((sum, eq) => sum + (parseInt(eq.damaged_quantity) || 0), 0)
+      equipmentList.reduce((sum, eq) => sum + (parseInt(eq.actual_quantity || eq.quantity) || 0), 0),
+      equipmentList.reduce((sum, eq) => sum + (parseInt(eq.quantity_available) || 0), 0),
+      equipmentList.reduce((sum, eq) => sum + (parseInt(eq.quantity_borrowed) || 0), 0),
+      equipmentList.reduce((sum, eq) => sum + (parseInt(eq.quantity_maintenance || eq.quantity_repairing) || 0), 0),
+      equipmentList.reduce((sum, eq) => sum + (parseInt(eq.quantity_damaged) || 0), 0)
     ]);
 
     formatWorksheet(summarySheet, [20, 15, 15, 15, 12, 12, 12]);

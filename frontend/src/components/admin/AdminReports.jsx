@@ -416,7 +416,7 @@ const AdminReports = () => {
 
   if (loading) {
     return (
-      <div className="bg-gray-50 min-h-screen p-6 flex items-center justify-center">
+      <div className="bg-gray-50 min-h-screen p-2 sm:p-4 md:p-6 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-emerald-600 mx-auto"></div>
           <p className="mt-4 text-gray-600 text-lg font-medium">กำลังโหลดข้อมูลรายงาน...</p>
@@ -426,32 +426,31 @@ const AdminReports = () => {
   }
 
   return (
-    <div className="bg-gray-50 min-h-screen p-6">
-      <div className="max-w-7xl mx-auto">
+    <div className="bg-gray-50 min-h-screen p-3 sm:p-4 md:p-6 lg:p-8">
+      <div className="max-w-7xl mx-auto space-y-4 sm:space-y-6">
         {/* Header */}
-        <div className="mb-8">
-          <div className="bg-gradient-to-r from-emerald-600 to-teal-600 rounded-2xl p-6 text-white shadow-xl">
-            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
-              <div className="flex items-center space-x-4">
-                <div className="bg-white/20 backdrop-blur-sm p-3 rounded-xl border border-white/30">
-                  <FiBarChart className="w-8 h-8 text-white" />
-                </div>
-                <div>
-                  <h1 className="text-3xl font-bold text-white drop-shadow-lg">รายงานและสถิติ</h1>
-                  <p className="text-emerald-100 mt-1 font-medium">วิเคราะห์ข้อมูลการใช้งานระบบ</p>
-                  <div className="flex items-center mt-2 space-x-4 text-sm">
-                    <span className="bg-white/20 px-3 py-1 rounded-full border border-white/30">
-                      <FiActivity className="inline w-4 h-4 mr-1 text-green-300" />
-                      <span className="text-white font-semibold">การยืมทั้งหมด: {dashboardData.overview.totalBorrowings}</span>
-                    </span>
-                    <span className="bg-white/20 px-3 py-1 rounded-full border border-white/30">
-                      <FiUsers className="inline w-4 h-4 mr-1 text-blue-300" />
-                      <span className="text-white font-semibold">ผู้ใช้: {dashboardData.overview.totalUsers}</span>
-                    </span>
-                  </div>
+        <div className="bg-gradient-to-r from-emerald-600 to-teal-600 rounded-xl shadow-lg p-4 sm:p-5 md:p-6 text-white">
+          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+            <div className="flex items-start gap-3">
+              <div className="bg-white/20 backdrop-blur-sm p-2.5 rounded-lg border border-white/30 flex-shrink-0">
+                <FiBarChart className="w-6 h-6 text-white" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <h1 className="text-xl sm:text-2xl font-bold text-white mb-1">รายงานและสถิติ</h1>
+                <p className="text-emerald-100 text-sm mb-2">วิเคราะห์ข้อมูลการใช้งานระบบ</p>
+                <div className="flex flex-wrap gap-2 text-xs">
+                  <span className="bg-white/20 px-2.5 py-1 rounded-full border border-white/30 inline-flex items-center">
+                    <FiActivity className="w-3.5 h-3.5 mr-1" />
+                    ยืม: {dashboardData.overview.totalBorrowings}
+                  </span>
+                  <span className="bg-white/20 px-2.5 py-1 rounded-full border border-white/30 inline-flex items-center">
+                    <FiUsers className="w-3.5 h-3.5 mr-1" />
+                    ผู้ใช้: {dashboardData.overview.totalUsers}
+                  </span>
                 </div>
               </div>
-              <div className="flex flex-col lg:flex-row items-start lg:items-center space-y-3 lg:space-y-0 lg:space-x-3 mt-4 lg:mt-0">
+            </div>
+            <div className="flex flex-col sm:flex-row gap-2 sm:items-center flex-shrink-0">
                 <div className="flex items-center space-x-2">
                   <label className="text-white text-sm font-medium">ประเภท:</label>
                   <select
@@ -474,7 +473,7 @@ const AdminReports = () => {
                   <select
                     value={dateRange}
                     onChange={(e) => setDateRange(e.target.value)}
-                    className="bg-white/20 backdrop-blur-sm border border-white/30 rounded-xl px-4 py-3 text-white placeholder-white/70 focus:ring-2 focus:ring-white/50"
+                    className="bg-white/20 backdrop-blur-sm border border-white/30 rounded-lg px-3 py-2 text-white text-sm focus:ring-2 focus:ring-white/50"
                   >
                     <option value="7days" className="text-gray-800">7 วันล่าสุด</option>
                     <option value="30days" className="text-gray-800">30 วันล่าสุด</option>
@@ -482,22 +481,20 @@ const AdminReports = () => {
                     <option value="1year" className="text-gray-800">1 ปีล่าสุด</option>
                   </select>
                 ) : (
-                  <div className="flex items-center space-x-2">
+                  <div className="flex items-center gap-2">
                     <input
                       type="date"
                       value={customStartDate}
                       onChange={(e) => setCustomStartDate(e.target.value)}
-                      className="bg-white/20 backdrop-blur-sm border border-white/30 rounded-xl px-3 py-2 text-white placeholder-white/70 focus:ring-2 focus:ring-white/50 text-sm"
-                      placeholder="เริ่มต้น"
+                      className="bg-white/20 backdrop-blur-sm border border-white/30 rounded-lg px-2 py-1.5 text-white text-xs focus:ring-2 focus:ring-white/50"
                     />
-                    <span className="text-white text-sm">ถึง</span>
+                    <span className="text-white text-xs">-</span>
                     <input
                       type="date"
                       value={customEndDate}
                       onChange={(e) => setCustomEndDate(e.target.value)}
                       min={customStartDate}
-                      className="bg-white/20 backdrop-blur-sm border border-white/30 rounded-xl px-3 py-2 text-white placeholder-white/70 focus:ring-2 focus:ring-white/50 text-sm"
-                      placeholder="สิ้นสุด"
+                      className="bg-white/20 backdrop-blur-sm border border-white/30 rounded-lg px-2 py-1.5 text-white text-xs focus:ring-2 focus:ring-white/50"
                     />
                   </div>
                 )}
@@ -505,99 +502,92 @@ const AdminReports = () => {
                 <select
                   value={exportFormat}
                   onChange={(e) => setExportFormat(e.target.value)}
-                  className="bg-white/20 backdrop-blur-sm border border-white/30 rounded-xl px-4 py-3 text-white placeholder-white/70 focus:ring-2 focus:ring-white/50"
+                  className="bg-white/20 backdrop-blur-sm border border-white/30 rounded-lg px-3 py-2 text-white text-sm focus:ring-2 focus:ring-white/50"
                 >
                   <option value="pdf" className="text-gray-800">PDF</option>
                   <option value="excel" className="text-gray-800">Excel</option>
                 </select>
                 <button
                   onClick={fetchReportData}
-                  className="bg-white/20 hover:bg-white/30 p-3 rounded-xl transition-all duration-300 backdrop-blur-sm border border-white/30"
+                  className="bg-white/20 hover:bg-white/30 p-2 rounded-lg transition-all backdrop-blur-sm border border-white/30"
                 >
-                  <FiRefreshCw className="w-5 h-5 text-white" />
+                  <FiRefreshCw className="w-4 h-4 text-white" />
                 </button>
                 <button
                   onClick={exportReport}
                   disabled={loading}
-                  className="bg-white/20 hover:bg-white/30 px-4 py-3 rounded-xl transition-all duration-300 backdrop-blur-sm border border-white/30 flex items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="bg-white/20 hover:bg-white/30 px-3 py-2 rounded-lg transition-all backdrop-blur-sm border border-white/30 flex items-center gap-2 disabled:opacity-50 text-sm"
                 >
-                  <FiDownload className="w-4 h-4 text-white" />
-                  <span className="text-white">ส่งออก</span>
+                  <FiDownload className="w-4 h-4" />
+                  <span className="hidden sm:inline">ส่งออก</span>
                 </button>
               </div>
             </div>
           </div>
-        </div>
 
         {/* Key Metrics */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-          <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">การยืมทั้งหมด</p>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow border border-gray-200 p-5">
+            <div className="flex items-start justify-between">
+              <div className="flex-1">
+                <p className="text-sm font-medium text-gray-500 mb-1">การยืมทั้งหมด</p>
                 <p className="text-3xl font-bold text-gray-900">{dashboardData.overview.totalBorrowings}</p>
               </div>
-              <div className="bg-blue-100 p-3 rounded-xl">
-                <FiActivity className="w-8 h-8 text-blue-600" />
+              <div className="bg-gradient-to-br from-blue-500 to-blue-600 p-3 rounded-xl shadow-sm">
+                <FiActivity className="w-6 h-6 text-white" />
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">การเบิกจ่าย</p>
+          <div className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow border border-gray-200 p-5">
+            <div className="flex items-start justify-between">
+              <div className="flex-1">
+                <p className="text-sm font-medium text-gray-500 mb-1">การเบิกจ่าย</p>
                 <p className="text-3xl font-bold text-gray-900">{dashboardData.overview.totalDisbursements || 0}</p>
-                <p className="text-sm text-orange-600 mt-1">
-                  <FiPackage className="inline w-4 h-4 mr-1" />
-                  รายการทั้งหมด
-                </p>
+                <p className="text-xs text-purple-600 mt-2 font-medium">รายการทั้งหมด</p>
               </div>
-              <div className="bg-purple-100 p-3 rounded-xl">
-                <FiPackage className="w-8 h-8 text-purple-600" />
+              <div className="bg-gradient-to-br from-purple-500 to-purple-600 p-3 rounded-xl shadow-sm">
+                <FiPackage className="w-6 h-6 text-white" />
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">เกินกำหนด</p>
+          <div className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow border border-gray-200 p-5">
+            <div className="flex items-start justify-between">
+              <div className="flex-1">
+                <p className="text-sm font-medium text-gray-500 mb-1">เกินกำหนด</p>
                 <p className="text-3xl font-bold text-gray-900">{dashboardData.overview.overdueBorrowings}</p>
                 {dashboardData.overview.overdueBorrowings > 0 && (
-                  <p className="text-sm text-red-600 mt-1">
-                    <FiAlertTriangle className="inline w-4 h-4 mr-1" />
-                    ต้องติดตาม
-                  </p>
+                  <p className="text-xs text-red-600 mt-2 font-medium">ต้องติดตาม</p>
                 )}
               </div>
-              <div className="bg-red-100 p-3 rounded-xl">
-                <FiAlertTriangle className="w-8 h-8 text-red-600" />
+              <div className="bg-gradient-to-br from-red-500 to-red-600 p-3 rounded-xl shadow-sm">
+                <FiAlertTriangle className="w-6 h-6 text-white" />
               </div>
             </div>
           </div>
         </div>
 
         {/* Charts Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
           {/* Borrowing Trends */}
-          <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-6">
-            <div className="flex items-center justify-between mb-6">
+          <div className="bg-white rounded-xl shadow-md border border-gray-200 p-5">
+            <div className="flex items-center justify-between mb-5">
               <div>
-                <h2 className="text-xl font-bold text-gray-900">แนวโน้มการยืม-คืน</h2>
-                <p className="text-gray-600 text-sm">การยืมและการคืนรายวัน</p>
+                <h2 className="text-lg font-bold text-gray-900">แนวโน้มการยืม-คืน</h2>
+                <p className="text-gray-500 text-sm mt-0.5">การยืมและการคืนรายวัน</p>
               </div>
-              <div className="flex items-center space-x-3">
+              <div className="flex items-center gap-2">
                 <select
                   value={trendPeriod}
                   onChange={(e) => setTrendPeriod(e.target.value)}
-                  className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white"
+                  className="border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white"
                 >
                   <option value="daily">รายวัน</option>
                   <option value="monthly">รายเดือน</option>
                   <option value="yearly">รายปี</option>
                 </select>
-                <FiBarChart className="w-6 h-6 text-gray-400" />
+                <FiBarChart className="w-5 h-5 text-gray-400" />
               </div>
             </div>
             <ResponsiveContainer width="100%" height={300}>

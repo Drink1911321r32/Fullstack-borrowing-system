@@ -10,6 +10,7 @@
     "db:seed": "node seed-database.js",
     "db:reset": "node setup-database.js && node seed-database.js",
     "db:init": "npm run db:setup && npm run db:seed",
+    "db:migrate": "node run-migrations.js",
     "update:serials": "node update-serial-numbers.js",
     "test:cron": "node test-cron.js"
   },
@@ -32,6 +33,7 @@
     "multer": "^2.0.2",
     "mysql2": "^3.15.1",
     "node-cron": "^4.2.1",
+    "nodemailer": "^7.0.12",
     "pdfkit": "^0.17.2",
     "sequelize": "^6.37.7",
     "uuid": "^13.0.0",

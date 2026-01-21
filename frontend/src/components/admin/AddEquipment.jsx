@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import { 
   FiCpu, FiPlusCircle, FiTrash2, FiEdit, FiCheck, FiX, FiImage, FiUpload, 
-  FiSearch, FiFilter, FiRefreshCw, FiDownload, FiEye, FiSettings,
+  FiSearch, FiFilter, FiRefreshCw, FiEye, FiSettings,
   FiPackage, FiTool, FiAlertCircle, FiStar
 } from 'react-icons/fi';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -701,7 +701,7 @@ const AddEquipment = () => {
   };
 
   return (
-    <div className="bg-gray-50 min-h-screen p-6">
+    <div className="bg-gray-50 min-h-screen p-2 sm:p-4 md:p-6">
       <div className="pb-6">
         {/* ส่วนหัวที่ปรับปรุงใหม่ */}
         <div className="mb-8">
@@ -726,9 +726,6 @@ const AddEquipment = () => {
                 disabled={isRefreshing}
               >
                 <FiRefreshCw className={`w-5 h-5 ${isRefreshing ? 'animate-spin' : ''}`} />
-              </button>
-              <button className="bg-white/10 hover:bg-white/20 p-3 rounded-xl transition-all duration-300 backdrop-blur-sm">
-                <FiDownload className="w-5 h-5" />
               </button>
               <button 
                 onClick={() => setShowFilters(!showFilters)}

@@ -10,6 +10,8 @@ import Login from './components/Login';
 import Register from './components/Register';
 import About from './components/About';
 import Contact from './components/Contact';
+import ForgotPassword from './components/ForgotPassword';
+import ResetPassword from './components/ResetPassword';
 
 // นำเข้าคอมโพเนนต์ Admin
 import Dashboard from './components/admin/Dashboard';
@@ -62,6 +64,8 @@ function App() {
             <Route path="/register" element={<Register />} />
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password/:token" element={<ResetPassword />} />
 
             {/* หน้า Admin */}
             <Route path="/admin" element={

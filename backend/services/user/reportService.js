@@ -135,7 +135,7 @@ const generatePDFReport = async (userId, dateRange, customStartDate, customEndDa
  */
 const generateExcelReport = async (userId, dateRange, customStartDate, customEndDate) => {
   const reportData = await getUserReportData(userId, dateRange, customStartDate, customEndDate);
-  return generateUserReportExcel(reportData);
+  return await generateUserReportExcel(reportData);
 };
 
 module.exports = {

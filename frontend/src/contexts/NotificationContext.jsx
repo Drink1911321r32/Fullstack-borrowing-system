@@ -6,6 +6,7 @@ import {
 } from 'react-icons/fi';
 import api from '../api/api';
 import { STORAGE_KEYS } from '../constants';
+import { useAuth } from './AuthContext';
 
 const NotificationContext = createContext();
 
@@ -21,6 +22,8 @@ export const NotificationProvider = ({ children }) => {
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [loading, setLoading] = useState(false);
+  const { refreshUserData } = useAuth();
+
 
   // ดึงการแจ้งเตือนจาก API
   const fetchNotifications = useCallback(async () => {
@@ -76,10 +79,20 @@ export const NotificationProvider = ({ children }) => {
     let eventSource = null;
     let reconnectTimeout = null;
     let isConnecting = false;
+    let reconnectAttempts = 0;
+    const MAX_RECONNECT_ATTEMPTS = 5;
+    const BASE_RECONNECT_DELAY = 3000; // 3 seconds
 
     const connectSSE = () => {
       // ป้องกันการ connect ซ้ำซ้อน
       if (isConnecting || eventSource) {
+        console.log('⚠️ SSE already connecting or connected, skipping...');
+        return;
+      }
+      
+      // ตรวจสอบ max attempts
+      if (reconnectAttempts >= MAX_RECONNECT_ATTEMPTS) {
+        console.warn('⚠️ Max SSE reconnection attempts reached. Stopping reconnection.');
         return;
       }
       
@@ -91,6 +104,7 @@ export const NotificationProvider = ({ children }) => {
 
         eventSource.onopen = () => {
           isConnecting = false;
+          reconnectAttempts = 0; // รีเซ็ต attempts เมื่อเชื่อมต่อสำเร็จ
           console.log('✅ SSE Connected');
         };
 
@@ -107,9 +121,29 @@ export const NotificationProvider = ({ children }) => {
                 is_read: Boolean(data.data.is_read)
               };
               
-              // เพิ่ม notification ใหม่
-              setNotifications(prev => [newNotification, ...prev]);
+              // ตรวจสอบว่ามี notification ซ้ำหรือไม่ (ป้องกัน duplicate)
+              setNotifications(prev => {
+                const isDuplicate = prev.some(n => 
+                  n.notification_id === newNotification.notification_id
+                );
+                
+                if (isDuplicate) {
+                  console.log('⚠️ Duplicate notification detected, skipping:', newNotification.notification_id);
+                  return prev;
+                }
+                
+                return [newNotification, ...prev];
+              });
+              
               setUnreadCount(prev => prev + 1);
+              
+              // ถ้าเป็น notification เกี่ยวกับเครดิต ให้ refresh user data
+              const creditRelatedTypes = ['credit', 'credit_admin', 'credit_change', 'borrow_approved'];
+              if (creditRelatedTypes.includes(data.data.type)) {
+                refreshUserData?.();
+                // Dispatch custom event for same-tab updates
+                window.dispatchEvent(new Event('userCreditUpdated'));
+              }
               
               // แสดง toast
               const CustomToast = () => (
@@ -152,11 +186,18 @@ export const NotificationProvider = ({ children }) => {
             clearTimeout(reconnectTimeout);
           }
           
-          // Reconnect after 10 seconds (เพิ่มจาก 5 เป็น 10)
-          reconnectTimeout = setTimeout(() => {
-            console.log('🔄 Attempting SSE reconnection...');
-            connectSSE();
-          }, 10000);
+          // Exponential backoff สำหรับการ reconnect
+          reconnectAttempts++;
+          const delay = Math.min(BASE_RECONNECT_DELAY * Math.pow(2, reconnectAttempts - 1), 60000); // Max 60 seconds
+          
+          if (reconnectAttempts < MAX_RECONNECT_ATTEMPTS) {
+            console.log(`🔄 Attempting SSE reconnection (${reconnectAttempts}/${MAX_RECONNECT_ATTEMPTS}) in ${delay / 1000}s...`);
+            reconnectTimeout = setTimeout(() => {
+              connectSSE();
+            }, delay);
+          } else {
+            console.warn('⚠️ Max reconnection attempts reached. Please refresh the page to reconnect.');
+          }
         };
       } catch (error) {
         console.error('Error creating EventSource:', error);
@@ -177,6 +218,7 @@ export const NotificationProvider = ({ children }) => {
         clearTimeout(reconnectTimeout);
       }
       if (eventSource) {
+        console.log('🔌 Closing SSE connection...');
         eventSource.close();
         eventSource = null;
       }
@@ -286,6 +328,11 @@ export const NotificationProvider = ({ children }) => {
         return;
       }
       
+      // ถ้าอ่านแล้ว ไม่ต้องทำอะไร
+      if (notification.is_read) {
+        return;
+      }
+      
       // ใช้ notification_id สำหรับ API call (ต้องเป็น integer)
       const actualId = parseInt(notification.notification_id || notification.id);
       
@@ -294,8 +341,7 @@ export const NotificationProvider = ({ children }) => {
         return;
       }
       
-      await api.put(`/notifications/${actualId}/read`);
-      
+      // Update UI ก่อน (Optimistic Update)
       setNotifications(prev =>
         prev.map(notif =>
           (notif.notification_id === actualId || notif.id === actualId)
@@ -304,9 +350,25 @@ export const NotificationProvider = ({ children }) => {
         )
       );
       setUnreadCount(prev => Math.max(0, prev - 1));
+      
+      // เรียก API
+      await api.patch(`/notifications/${actualId}/read`);
     } catch (error) {
       console.error('Error marking notification as read:', error);
-      toast.error('ไม่สามารถอัพเดทสถานะได้');
+      // Rollback UI ถ้า API ล้มเหลว
+      const notification = notifications.find(n => 
+        n.notification_id === notificationId || n.id === notificationId
+      );
+      if (notification) {
+        setNotifications(prev =>
+          prev.map(notif =>
+            (notif.notification_id === notification.notification_id || notif.id === notificationId)
+              ? { ...notif, is_read: false } 
+              : notif
+          )
+        );
+        setUnreadCount(prev => prev + 1);
+      }
     }
   }, [notifications]);
 

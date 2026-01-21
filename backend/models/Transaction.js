@@ -16,6 +16,16 @@ const BorrowingTransaction = sequelize.define('borrowing_transaction', {
       key: 'member_id'
     }
   },
+  member_name: {
+    type: DataTypes.STRING(200),
+    allowNull: true,
+    comment: 'Snapshot ของชื่อสมาชิกตอนยืม'
+  },
+  member_email: {
+    type: DataTypes.STRING(100),
+    allowNull: true,
+    comment: 'Snapshot ของอีเมลสมาชิกตอนยืม'
+  },
   equipment_id: {
     type: DataTypes.INTEGER,
     allowNull: false,

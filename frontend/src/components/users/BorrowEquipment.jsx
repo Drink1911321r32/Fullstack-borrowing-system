@@ -8,7 +8,7 @@ import {
 } from 'react-icons/fi';
 import { toast } from 'react-toastify';
 import { STORAGE_KEYS } from '../../constants';
-import { equipmentAPI, equipmentTypeAPI, equipmentItemAPI, API_URL } from '../../api/api';
+import { equipmentAPI, equipmentTypeAPI, equipmentItemAPI, API_URL, userAPI } from '../../api/api';
 import { createBorrowRequest, getUserBorrowings, cancelBorrowing } from '../../api/borrowingService';
 import { getTodayString, getCurrentDateTimeLocal, combineDateTimeLocal, formatDateTime } from '../../utils';
 import axios from 'axios';
@@ -46,6 +46,21 @@ const BorrowEquipment = () => {
   const [equipmentItems, setEquipmentItems] = useState([]);
   const [loadingItems, setLoadingItems] = useState(false);
 
+  // ฟังก์ชัน refresh ข้อมูล user (เครดิต)
+  const refreshUserCredit = async () => {
+    try {
+      const response = await userAPI.getUserProfile();
+      if (response.data && response.data.success) {
+        const updatedUser = response.data.data;
+        setUserData(updatedUser);
+        localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(updatedUser));
+        console.log('✅ User credit refreshed:', updatedUser.credit);
+      }
+    } catch (error) {
+      console.error('Error refreshing user credit:', error);
+    }
+  };
+
   useEffect(() => {
     // Load user data
     const storedUserData = localStorage.getItem(STORAGE_KEYS.USER);
@@ -57,6 +72,9 @@ const BorrowEquipment = () => {
         console.error('Error parsing user data:', error);
       }
     }
+
+    // Refresh user credit เมื่อ component mount
+    refreshUserCredit();
 
     const fetchData = async () => {
       // ดึงค่า max_borrow_days จาก settings
@@ -77,8 +95,8 @@ const BorrowEquipment = () => {
             setPenaltyType(data.data.setting_value || 'day');
           }
         }
-        // ถ้าไม่เจอ (404) ก็ใช้ default 'day' โดยไม่ต้องทำอะไร
       } catch (error) {
+        console.warn('Failed to fetch penalty_type setting, using default:', error);
         // Silently use default 'day'
       }
       
@@ -87,6 +105,28 @@ const BorrowEquipment = () => {
       await fetchBorrowRequests();
     };
     fetchData();
+  }, []);
+
+  // Listen for credit changes via storage event
+  useEffect(() => {
+    const handleStorageChange = (e) => {
+      if (e.key === 'user_credit_updated' || e.key === STORAGE_KEYS.USER) {
+        refreshUserCredit();
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    
+    // Custom event for same-tab updates
+    const handleCustomEvent = () => {
+      refreshUserCredit();
+    };
+    window.addEventListener('userCreditUpdated', handleCustomEvent);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('userCreditUpdated', handleCustomEvent);
+    };
   }, []);
 
   // Auto-select equipment ที่ส่งมาจาก EquipmentBrowser
@@ -184,7 +224,8 @@ const BorrowEquipment = () => {
       const isLoanType = equipmentType?.usage_type === 'Loan';
       
       // ตรวจสอบว่ามีจำนวนพร้อมให้ยืม (นับจาก equipment_items)
-      const isAvailable = item.status === 'Available' && ((item.quantity_available || 0) > 0);
+      // ไม่เช็ค status ของอุปกรณ์โดยรวม แต่ให้เช็คว่ามี items พร้อมใช้งานหรือไม่
+      const isAvailable = (item.quantity_available || 0) > 0;
 
       return matchesSearch && matchesType && matchesStatus && isLoanType && isAvailable;
     });
@@ -403,7 +444,7 @@ const BorrowEquipment = () => {
   const currentEquipment = filteredEquipment.slice(startIndex, startIndex + itemsPerPage);
 
   return (
-    <div className="bg-gray-50 min-h-screen p-6">
+    <div className="bg-gray-50 min-h-screen p-2 sm:p-4 md:p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
@@ -450,7 +491,11 @@ const BorrowEquipment = () => {
                                 เครดิต
                               </div>
                               <div className="flex items-baseline space-x-1">
-                                <span className="text-2xl font-black bg-gradient-to-r from-orange-600 via-pink-600 to-purple-600 bg-clip-text text-transparent">
+                                <span className={`text-2xl font-black bg-gradient-to-r ${
+                                  (userData.credit || 0) < 0 
+                                    ? 'from-red-600 via-red-500 to-orange-500' 
+                                    : 'from-orange-600 via-pink-600 to-purple-600'
+                                } bg-clip-text text-transparent`}>
                                   {userData.credit || 0}
                                 </span>
                                 <span className="text-xs font-semibold text-gray-500">คะแนน</span>

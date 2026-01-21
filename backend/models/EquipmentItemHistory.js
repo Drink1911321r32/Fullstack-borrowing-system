@@ -28,10 +28,23 @@ const EquipmentItemHistory = sequelize.define('equipment_item_history', {
     type: DataTypes.DATE,
     defaultValue: DataTypes.NOW
   },
-  performed_by: {
+  performed_by_admin: {
     type: DataTypes.INTEGER,
-    allowNull: true
-    // อาจเป็น member_id หรือ admin_id ไม่ระบุ foreign key
+    allowNull: true,
+    references: {
+      model: 'admins',
+      key: 'admin_id'
+    },
+    comment: 'Admin ที่ทำการ'
+  },
+  performed_by_member: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    references: {
+      model: 'members',
+      key: 'member_id'
+    },
+    comment: 'Member ที่ทำการ'
   },
   notes: {
     type: DataTypes.TEXT,

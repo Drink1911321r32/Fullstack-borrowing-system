@@ -22,6 +22,12 @@ Font.register({
 // Register hyphenation callback for Thai - ป้องกันการตัดคำ
 Font.registerHyphenationCallback(word => [word]);
 
+// Register emoji fonts for better Unicode support
+Font.registerEmojiSource({
+  format: 'png',
+  url: 'https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/',
+});
+
 /**
  * สร้าง PDF รายงานสำหรับ Admin ด้วย @react-pdf/renderer
  */
@@ -228,7 +234,7 @@ const generateUserReportPDF = async (reportData, dateRange, userData) => {
             style: { 
               padding: 50,
               fontFamily: 'NotoSansThai',
-              fontSize: 15
+              fontSize: 13
             }
           },
           // Header
@@ -236,8 +242,8 @@ const generateUserReportPDF = async (reportData, dateRange, userData) => {
             View,
             { style: { textAlign: 'center', marginBottom: 20 } },
             React.createElement(Text, { style: { fontSize: 20, fontWeight: 'bold' } }, 'รายงานกิจกรรมผู้ใช้'),
-            React.createElement(Text, { style: { fontSize: 12, marginTop: 5 } }, `ผู้ใช้: ${userData?.name || 'ไม่ระบุ'}`),
-            React.createElement(Text, { style: { fontSize: 14 } }, `ช่วงเวลา: ${dateRange}`)
+            React.createElement(Text, { style: { fontSize: 13, marginTop: 5 } }, `ผู้ใช้: ${userData?.name || 'ไม่ระบุ'}`),
+            React.createElement(Text, { style: { fontSize: 13 } }, `ช่วงเวลา: ${dateRange}`)
           ),
           // Divider
           React.createElement(View, { style: { borderBottomWidth: 1, borderBottomColor: '#000', marginBottom: 15 } }),
@@ -245,35 +251,35 @@ const generateUserReportPDF = async (reportData, dateRange, userData) => {
           React.createElement(
             View,
             { style: { marginBottom: 20 } },
-            React.createElement(Text, { style: { fontSize: 14, fontWeight: 'bold', marginBottom: 10 } }, 'สรุป'),
-            React.createElement(Text, { style: { marginBottom: 5 } }, `จำนวนการยืมทั้งหมด: ${Number(reportData.overview?.total_borrowings) || 0} ครั้ง`),
-            React.createElement(Text, { style: { marginBottom: 5 } }, `การยืมที่กำลังดำเนินการ: ${Number(reportData.overview?.active_borrowings) || 0} ครั้ง`),
-            React.createElement(Text, { style: { marginBottom: 5 } }, `การยืมที่เสร็จสมบูรณ์: ${Number(reportData.overview?.completed_borrowings) || 0} ครั้ง`),
-            React.createElement(Text, { style: { marginBottom: 5 } }, `จำนวนครั้งที่เกินกำหนด: ${Number(reportData.overview?.overdue_count) || 0} ครั้ง`),
-            React.createElement(Text, { style: { marginBottom: 5 } }, `เครดิตปัจจุบัน: ${Number(reportData.overview?.current_credit) || 0} คะแนน`)
+            React.createElement(Text, { style: { fontSize: 15, fontWeight: 'bold', marginBottom: 10 } }, 'สรุป'),
+            React.createElement(Text, { style: { marginBottom: 5, fontSize: 13 } }, `จำนวนการยืมทั้งหมด: ${Number(reportData.overview?.total_borrowings) || 0} ครั้ง`),
+            React.createElement(Text, { style: { marginBottom: 5, fontSize: 13 } }, `การยืมที่กำลังดำเนินการ: ${Number(reportData.overview?.active_borrowings) || 0} ครั้ง`),
+            React.createElement(Text, { style: { marginBottom: 5, fontSize: 13 } }, `การยืมที่เสร็จสมบูรณ์: ${Number(reportData.overview?.completed_borrowings) || 0} ครั้ง`),
+            React.createElement(Text, { style: { marginBottom: 5, fontSize: 13 } }, `จำนวนครั้งที่เกินกำหนด: ${Number(reportData.overview?.overdue_count) || 0} ครั้ง`),
+            React.createElement(Text, { style: { marginBottom: 5, fontSize: 13 } }, `เครดิตปัจจุบัน: ${Number(reportData.overview?.current_credit) || 0} คะแนน`)
           ),
           // Performance
           reportData.performance_metrics ? React.createElement(
             View,
             { style: { marginBottom: 20 } },
-            React.createElement(Text, { style: { fontSize: 14, fontWeight: 'bold', marginBottom: 10 } }, 'ประสิทธิภาพการใช้งาน'),
-            React.createElement(Text, { style: { marginBottom: 5 } }, `คะแนนรวม: ${reportData.performance_metrics.overall_rating || 0}%`),
-            React.createElement(Text, { style: { marginBottom: 5 } }, `อัตราการคืนตรงเวลา: ${reportData.performance_metrics.on_time_rate || 0}%`),
-            React.createElement(Text, { style: { marginBottom: 5 } }, `อันดับ: ${reportData.performance_metrics.rank_position || 0}/${reportData.performance_metrics.total_users || 0}`)
+            React.createElement(Text, { style: { fontSize: 15, fontWeight: 'bold', marginBottom: 10 } }, 'ประสิทธิภาพการใช้งาน'),
+            React.createElement(Text, { style: { marginBottom: 5, fontSize: 13 } }, `คะแนนรวม: ${reportData.performance_metrics.overall_rating || 0}%`),
+            React.createElement(Text, { style: { marginBottom: 5, fontSize: 13 } }, `อัตราการคืนตรงเวลา: ${reportData.performance_metrics.on_time_rate || 0}%`),
+            React.createElement(Text, { style: { marginBottom: 5, fontSize: 13 } }, `อันดับ: ${reportData.performance_metrics.rank_position || 0}/${reportData.performance_metrics.total_users || 0}`)
           ) : null,
           // Borrowing History (first 5 items)
           reportData.borrowing_history && reportData.borrowing_history.length > 0 ? React.createElement(
             View,
             { style: { marginBottom: 20 } },
-            React.createElement(Text, { style: { fontSize: 14, fontWeight: 'bold', marginBottom: 10 } }, 'ประวัติการยืม'),
+            React.createElement(Text, { style: { fontSize: 15, fontWeight: 'bold', marginBottom: 10 } }, 'ประวัติการยืม'),
             reportData.borrowing_history.slice(0, 5).map((item, idx) =>
               React.createElement(
                 View,
                 { key: idx, style: { marginBottom: 8 } },
-                React.createElement(Text, { style: { fontWeight: 'bold', fontSize: 14 } }, `${idx + 1}. ${item.equipment_name}`),
-                React.createElement(Text, { style: { marginBottom: 2, fontSize: 15 } }, `   วันที่ยืม: ${new Date(item.borrow_date).toLocaleDateString('th-TH')}`),
-                React.createElement(Text, { style: { marginBottom: 2, fontSize: 15 } }, `   วันที่คืน: ${item.return_date ? new Date(item.return_date).toLocaleDateString('th-TH') : 'ยังไม่คืน'}`),
-                React.createElement(Text, { style: { marginBottom: 2, fontSize: 15 } }, `   สถานะ: ${item.status}`)
+                React.createElement(Text, { style: { fontWeight: 'bold', fontSize: 13, flexWrap: 'wrap' } }, `${idx + 1}. ${item.equipment_name}`),
+                React.createElement(Text, { style: { marginBottom: 2, fontSize: 12 } }, `   วันที่ยืม: ${new Date(item.borrow_date).toLocaleDateString('th-TH')}`),
+                React.createElement(Text, { style: { marginBottom: 2, fontSize: 12 } }, `   วันที่คืน: ${item.return_date ? new Date(item.return_date).toLocaleDateString('th-TH') : 'ยังไม่คืน'}`),
+                React.createElement(Text, { style: { marginBottom: 2, fontSize: 12 } }, `   สถานะ: ${item.status}`)
               )
             )
           ) : null,
@@ -281,15 +287,15 @@ const generateUserReportPDF = async (reportData, dateRange, userData) => {
           reportData.disbursement_history && reportData.disbursement_history.length > 0 ? React.createElement(
             View,
             { style: { marginBottom: 20 } },
-            React.createElement(Text, { style: { fontSize: 14, fontWeight: 'bold', marginBottom: 10 } }, 'ประวัติการเบิกจ่าย'),
+            React.createElement(Text, { style: { fontSize: 15, fontWeight: 'bold', marginBottom: 10 } }, 'ประวัติการเบิกจ่าย'),
             reportData.disbursement_history.slice(0, 5).map((item, idx) =>
               React.createElement(
                 View,
                 { key: idx, style: { marginBottom: 8 } },
-                React.createElement(Text, { style: { fontWeight: 'bold', fontSize: 14 } }, `${idx + 1}. ${item.equipment_name}`),
-                React.createElement(Text, { style: { marginBottom: 2, fontSize: 15 } }, `   วันที่ขอ: ${new Date(item.request_date).toLocaleDateString('th-TH')}`),
-                React.createElement(Text, { style: { marginBottom: 2, fontSize: 15 } }, `   วันที่เบิก: ${item.disbursement_date ? new Date(item.disbursement_date).toLocaleDateString('th-TH') : 'ยังไม่ได้เบิก'}`),
-                React.createElement(Text, { style: { marginBottom: 2, fontSize: 15 } }, `   จำนวนขอ: ${item.quantity_requested} | เบิกจริง: ${item.quantity_disbursed || 0} | สถานะ: ${item.status}`)
+                React.createElement(Text, { style: { fontWeight: 'bold', fontSize: 13, flexWrap: 'wrap' } }, `${idx + 1}. ${item.equipment_name}`),
+                React.createElement(Text, { style: { marginBottom: 2, fontSize: 12 } }, `   วันที่ขอ: ${new Date(item.request_date).toLocaleDateString('th-TH')}`),
+                React.createElement(Text, { style: { marginBottom: 2, fontSize: 12 } }, `   วันที่เบิก: ${item.disbursement_date ? new Date(item.disbursement_date).toLocaleDateString('th-TH') : 'ยังไม่ได้เบิก'}`),
+                React.createElement(Text, { style: { marginBottom: 2, fontSize: 12 } }, `   จำนวนขอ: ${item.quantity_requested} | เบิกจริง: ${item.quantity_disbursed || 0} | สถานะ: ${item.status}`)
               )
             )
           ) : null,
@@ -318,22 +324,22 @@ const generateUserReportPDF = async (reportData, dateRange, userData) => {
             style: { 
               padding: 50,
               fontFamily: 'NotoSansThai',
-              fontSize: 15
+              fontSize: 13
             }
           },
           // Continuing Borrowing History
           reportData.borrowing_history && reportData.borrowing_history.length > 5 ? React.createElement(
             View,
             { style: { marginBottom: 20 } },
-            React.createElement(Text, { style: { fontSize: 14, fontWeight: 'bold', marginBottom: 10 } }, 'ประวัติการยืม (ต่อ)'),
+            React.createElement(Text, { style: { fontSize: 15, fontWeight: 'bold', marginBottom: 10 } }, 'ประวัติการยืม (ต่อ)'),
             reportData.borrowing_history.slice(5).map((item, idx) =>
               React.createElement(
                 View,
                 { key: idx, style: { marginBottom: 8 } },
-                React.createElement(Text, { style: { fontWeight: 'bold', fontSize: 14 } }, `${idx + 6}. ${item.equipment_name}`),
-                React.createElement(Text, { style: { marginBottom: 2, fontSize: 15 } }, `   วันที่ยืม: ${new Date(item.borrow_date).toLocaleDateString('th-TH')}`),
-                React.createElement(Text, { style: { marginBottom: 2, fontSize: 15 } }, `   วันที่คืน: ${item.return_date ? new Date(item.return_date).toLocaleDateString('th-TH') : 'ยังไม่คืน'}`),
-                React.createElement(Text, { style: { marginBottom: 2, fontSize: 15 } }, `   สถานะ: ${item.status}`)
+                React.createElement(Text, { style: { fontWeight: 'bold', fontSize: 13, flexWrap: 'wrap' } }, `${idx + 6}. ${item.equipment_name}`),
+                React.createElement(Text, { style: { marginBottom: 2, fontSize: 12 } }, `   วันที่ยืม: ${new Date(item.borrow_date).toLocaleDateString('th-TH')}`),
+                React.createElement(Text, { style: { marginBottom: 2, fontSize: 12 } }, `   วันที่คืน: ${item.return_date ? new Date(item.return_date).toLocaleDateString('th-TH') : 'ยังไม่คืน'}`),
+                React.createElement(Text, { style: { marginBottom: 2, fontSize: 12 } }, `   สถานะ: ${item.status}`)
               )
             )
           ) : null,
@@ -341,15 +347,15 @@ const generateUserReportPDF = async (reportData, dateRange, userData) => {
           reportData.disbursement_history && reportData.disbursement_history.length > 5 ? React.createElement(
             View,
             { style: { marginBottom: 20 } },
-            React.createElement(Text, { style: { fontSize: 14, fontWeight: 'bold', marginBottom: 10 } }, 'ประวัติการเบิกจ่าย (ต่อ)'),
+            React.createElement(Text, { style: { fontSize: 15, fontWeight: 'bold', marginBottom: 10 } }, 'ประวัติการเบิกจ่าย (ต่อ)'),
             reportData.disbursement_history.slice(5).map((item, idx) =>
               React.createElement(
                 View,
                 { key: idx, style: { marginBottom: 8 } },
-                React.createElement(Text, { style: { fontWeight: 'bold', fontSize: 14 } }, `${idx + 6}. ${item.equipment_name}`),
-                React.createElement(Text, { style: { marginBottom: 2, fontSize: 15 } }, `   วันที่ขอ: ${new Date(item.request_date).toLocaleDateString('th-TH')}`),
-                React.createElement(Text, { style: { marginBottom: 2, fontSize: 15 } }, `   วันที่เบิก: ${item.disbursement_date ? new Date(item.disbursement_date).toLocaleDateString('th-TH') : 'ยังไม่ได้เบิก'}`),
-                React.createElement(Text, { style: { marginBottom: 2, fontSize: 15 } }, `   จำนวนขอ: ${item.quantity_requested} | เบิกจริง: ${item.quantity_disbursed || 0} | สถานะ: ${item.status}`)
+                React.createElement(Text, { style: { fontWeight: 'bold', fontSize: 13, flexWrap: 'wrap' } }, `${idx + 6}. ${item.equipment_name}`),
+                React.createElement(Text, { style: { marginBottom: 2, fontSize: 12 } }, `   วันที่ขอ: ${new Date(item.request_date).toLocaleDateString('th-TH')}`),
+                React.createElement(Text, { style: { marginBottom: 2, fontSize: 12 } }, `   วันที่เบิก: ${item.disbursement_date ? new Date(item.disbursement_date).toLocaleDateString('th-TH') : 'ยังไม่ได้เบิก'}`),
+                React.createElement(Text, { style: { marginBottom: 2, fontSize: 12 } }, `   จำนวนขอ: ${item.quantity_requested} | เบิกจริง: ${item.quantity_disbursed || 0} | สถานะ: ${item.status}`)
               )
             )
           ) : null,

@@ -16,10 +16,16 @@ const EquipmentItem = sequelize.define('equipment_item', {
     }
   },
   serial_number: {
-    type: DataTypes.STRING(19), // 16 หลัก + 3 เครื่องหมาย dash
+    type: DataTypes.STRING(16), // 16 ตัวเลข ไม่มี dash
     allowNull: false,
     unique: true,
-    comment: 'Serial Number รูปแบบ TTTT-EEEEE-MMMM-SSS (16 หลัก)'
+    comment: 'Serial Number รูปแบบ 16 ตัวเลข (TTTTEEEEEMMMMSSS)',
+    validate: {
+      is: {
+        args: /^\d{16}$/,
+        msg: 'Serial Number ต้องเป็นตัวเลข 16 หลัก'
+      }
+    }
   },
   item_code: {
     type: DataTypes.STRING(50),

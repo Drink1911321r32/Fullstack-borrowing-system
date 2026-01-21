@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { userAPI } from '../api/api';
 import { FiMail, FiLock, FiArrowLeft, FiUser, FiAlertCircle, FiCreditCard, FiUserPlus } from 'react-icons/fi';
@@ -8,6 +8,10 @@ import { getAllFaculties, getAllMajors } from '../api/facultyMajorService';
 
 const Register = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const userTypeFromState = location.state?.userType || 'student';
+  const isUserTypeLocked = location.state?.userType !== undefined; // ล็อคถ้ามาจาก Welcome
+  const [userType, setUserType] = useState(userTypeFromState);
   const [defaultCredit, setDefaultCredit] = useState(100);
   const [allowRegistration, setAllowRegistration] = useState(true);
   const [systemName, setSystemName] = useState('ระบบยืม-คืนและเบิกจ่ายวัสดุ');
@@ -132,13 +136,16 @@ const Register = () => {
         newErrors.lastName = 'นามสกุลต้องเป็นภาษาไทยเท่านั้น และห้ามมีตัวเลขหรืออักขระพิเศษ';
       }
       
-      if (formData.studentCode.trim()) {
-        const studentCodePattern = /^\d{11}-\d{1}$/;
-        if (!studentCodePattern.test(formData.studentCode.trim())) {
-          newErrors.studentCode = 'รูปแบบรหัสนักศึกษาไม่ถูกต้อง (ต้องเป็น 11 หลัก-1 หลัก เช่น 12345678901-2)';
+      // รหัสนักศึกษาจะเป็น required เฉพาะนักศึกษาเท่านั้น
+      if (userType === 'student') {
+        if (formData.studentCode.trim()) {
+          const studentCodePattern = /^\d{11}-\d{1}$/;
+          if (!studentCodePattern.test(formData.studentCode.trim())) {
+            newErrors.studentCode = 'รูปแบบรหัสนักศึกษาไม่ถูกต้อง (ต้องเป็น 11 หลัก-1 หลัก เช่น 12345678901-2)';
+          }
+        } else {
+          newErrors.studentCode = 'กรุณากรอกรหัสนักศึกษา';
         }
-      } else {
-        newErrors.studentCode = 'กรุณากรอกรหัสนักศึกษา';
       }
     } else if (step === 2) {
       if (!formData.email.trim()) {
@@ -195,9 +202,9 @@ const Register = () => {
         last_name: formData.lastName.trim(),
         email: formData.email.trim().toLowerCase(),
         password: formData.password,
-        member_type: 'student', // บังคับให้เป็น student เสมอ
+        member_type: userType, // ใช้ค่าจาก userType ที่เลือก (student, faculty, หรือ staff)
         credit: Number(formData.credit) || 100,
-        student_code: formData.studentCode.trim(), // ส่งรหัสนักศึกษา (required)
+        student_code: userType === 'student' ? formData.studentCode.trim() : null, // ส่งรหัสนักศึกษาเฉพาะนักศึกษา
         faculty_id: formData.facultyId ? parseInt(formData.facultyId) : null,
         major_id: formData.majorId ? parseInt(formData.majorId) : null
       };
@@ -280,6 +287,57 @@ const Register = () => {
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md relative z-10">
         <div className="bg-white/80 backdrop-blur-lg py-10 px-6 shadow-2xl sm:rounded-3xl sm:px-12 border border-white/20">
+          {/* User Type Selection */}
+          <div className="mb-8">
+            <label className="block text-sm font-semibold text-gray-800 mb-3">
+              ประเภทผู้ใช้งาน
+            </label>
+            <div className="grid grid-cols-3 gap-3">
+              <button
+                type="button"
+                onClick={() => !isUserTypeLocked && setUserType('student')}
+                disabled={isUserTypeLocked}
+                className={`py-3 px-4 rounded-xl text-sm font-medium transition-all duration-200 ${
+                  userType === 'student'
+                    ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg'
+                    : isUserTypeLocked
+                    ? 'bg-gray-100 text-gray-400 border-2 border-gray-200 cursor-not-allowed'
+                    : 'bg-white text-gray-700 border-2 border-gray-200 hover:border-indigo-300 cursor-pointer'
+                }`}
+              >
+                นักศึกษา
+              </button>
+              <button
+                type="button"
+                onClick={() => !isUserTypeLocked && setUserType('faculty')}
+                disabled={isUserTypeLocked}
+                className={`py-3 px-4 rounded-xl text-sm font-medium transition-all duration-200 ${
+                  userType === 'faculty'
+                    ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg'
+                    : isUserTypeLocked
+                    ? 'bg-gray-100 text-gray-400 border-2 border-gray-200 cursor-not-allowed'
+                    : 'bg-white text-gray-700 border-2 border-gray-200 hover:border-indigo-300 cursor-pointer'
+                }`}
+              >
+                อาจารย์
+              </button>
+              <button
+                type="button"
+                onClick={() => !isUserTypeLocked && setUserType('staff')}
+                disabled={isUserTypeLocked}
+                className={`py-3 px-4 rounded-xl text-sm font-medium transition-all duration-200 ${
+                  userType === 'staff'
+                    ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg'
+                    : isUserTypeLocked
+                    ? 'bg-gray-100 text-gray-400 border-2 border-gray-200 cursor-not-allowed'
+                    : 'bg-white text-gray-700 border-2 border-gray-200 hover:border-indigo-300 cursor-pointer'
+                }`}
+              >
+                เจ้าหน้าที่
+              </button>
+            </div>
+          </div>
+
           <div className="mb-8">
             <div className="flex items-center justify-between mb-2">
               <div className="text-xs text-gray-600 font-medium">ข้อมูลส่วนตัว</div>
@@ -358,37 +416,55 @@ const Register = () => {
                   </div>
                 </div>
 
-                <div>
-                  <label htmlFor="studentCode" className="block text-sm font-semibold text-gray-800 mb-2">
-                    รหัสนักศึกษา <span className="text-red-500">*</span>
-                  </label>
-                  <div className="relative group">
-                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                      <FiCreditCard className={`h-5 w-5 ${errors.studentCode ? 'text-red-500' : 'text-indigo-400 group-focus-within:text-indigo-600'}`} />
+                {userType === 'student' && (
+                  <div>
+                    <label htmlFor="studentCode" className="block text-sm font-semibold text-gray-800 mb-2">
+                      รหัสนักศึกษา <span className="text-red-500">*</span>
+                    </label>
+                    <div className="relative group">
+                      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                        <FiCreditCard className={`h-5 w-5 ${errors.studentCode ? 'text-red-500' : 'text-indigo-400 group-focus-within:text-indigo-600'}`} />
+                      </div>
+                      <input
+                        id="studentCode"
+                        name="studentCode"
+                        type="text"
+                        value={formData.studentCode}
+                        onChange={handleChange}
+                        className={`appearance-none block w-full pl-12 pr-4 py-3.5 border-2 ${
+                          errors.studentCode ? 'border-red-300 focus:border-red-500' : 'border-gray-200 focus:border-indigo-500'
+                        } rounded-2xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all duration-200 sm:text-sm bg-white/50`}
+                        placeholder="กรอกรหัสนักศึกษา (เช่น 12345678901-2)"
+                        required
+                      />
                     </div>
-                    <input
-                      id="studentCode"
-                      name="studentCode"
-                      type="text"
-                      value={formData.studentCode}
-                      onChange={handleChange}
-                      className={`appearance-none block w-full pl-12 pr-4 py-3.5 border-2 ${
-                        errors.studentCode ? 'border-red-300 focus:border-red-500' : 'border-gray-200 focus:border-indigo-500'
-                      } rounded-2xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all duration-200 sm:text-sm bg-white/50`}
-                      placeholder="กรอกรหัสนักศึกษา"
-                      required
-                    />
-                  </div>
-                  {errors.studentCode && (
-                    <p className="mt-1 text-sm text-red-600 flex items-center">
-                      <FiAlertCircle className="mr-1 h-4 w-4" />
-                      {errors.studentCode}
+                    {errors.studentCode && (
+                      <p className="mt-1 text-sm text-red-600 flex items-center">
+                        <FiAlertCircle className="mr-1 h-4 w-4" />
+                        {errors.studentCode}
+                      </p>
+                    )}
+                    <p className="mt-1 text-xs text-gray-500">
+                      รหัสนักศึกษาจะใช้สำหรับเข้าสู่ระบบ
                     </p>
-                  )}
-                  <p className="mt-1 text-xs text-gray-500">
-                    รหัสนักศึกษาจะใช้สำหรับเข้าสู่ระบบ
-                  </p>
-                </div>
+                  </div>
+                )}
+
+                {(userType === 'faculty' || userType === 'staff') && (
+                  <div className="bg-indigo-50 border border-indigo-200 rounded-xl p-4">
+                    <div className="flex items-start">
+                      <FiAlertCircle className="h-5 w-5 text-indigo-600 mt-0.5 mr-2 flex-shrink-0" />
+                      <div className="text-sm text-indigo-800">
+                        <p className="font-semibold mb-1">
+                          {userType === 'faculty' ? 'สำหรับอาจารย์' : 'สำหรับเจ้าหน้าที่'}
+                        </p>
+                        <p>
+                          คุณจะใช้อีเมลในการเข้าสู่ระบบ ไม่จำเป็นต้องใส่รหัสนักศึกษา
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                 <div className="flex justify-end">
                   <button

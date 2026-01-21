@@ -81,8 +81,8 @@ const Member = sequelize.define('Member', {
     defaultValue: 100,
     validate: {
       min: {
-        args: [0],
-        msg: 'เครดิตต้องไม่ติดลบ'
+        args: [-10000],
+        msg: 'เครดิตต้องไม่ต่ำกว่า -10,000'
       },
       max: {
         args: [10000],

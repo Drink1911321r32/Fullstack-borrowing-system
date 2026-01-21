@@ -463,7 +463,7 @@ export const notificationAPI = {
 
   markAsRead: async (notificationId) => {
     try {
-      const response = await API.put(`/notifications/${notificationId}/read`);
+      const response = await API.patch(`/notifications/${notificationId}/read`);
       return response.data;
     } catch (error) {
       console.error('Error marking notification as read:', error);

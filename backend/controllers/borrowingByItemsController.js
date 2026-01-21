@@ -242,6 +242,15 @@ const approveBorrowRequestByItems = async (req, res) => {
     const creditNeeded = parseFloat(transaction.credit_deducted) || 0;
     const userCredit = parseFloat(transaction.credit) || 0;
 
+    // เช็คว่าเครดิตต้องไม่ติดลบก่อนยืม
+    if (userCredit < 0) {
+      await connection.rollback();
+      return res.status(400).json({
+        success: false,
+        message: `ไม่สามารถยืมได้เนื่องจากเครดิตติดลบ (${userCredit} เครดิต)`
+      });
+    }
+
     if (userCredit < creditNeeded) {
       await connection.rollback();
       return res.status(400).json({
@@ -323,7 +332,7 @@ const approveBorrowRequestByItems = async (req, res) => {
       );
       await connection.query(
         `INSERT INTO equipment_item_history 
-         (item_id, transaction_id, action_type, action_date, performed_by, notes)
+         (item_id, transaction_id, action_type, action_date, performed_by_admin, notes)
          VALUES ?`,
         [historyValues]
       );

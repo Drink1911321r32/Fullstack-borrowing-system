@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   FiPackage, FiCalendar, FiUser, FiCheckCircle, FiXCircle, FiClock,
-  FiFilter, FiSearch, FiRefreshCw, FiDownload, FiEye, FiEdit3,
+  FiFilter, FiSearch, FiRefreshCw, FiEye, FiEdit3,
   FiAlertTriangle, FiMessageCircle, FiPhone, FiMail, FiMapPin,
   FiTrendingUp, FiTrendingDown, FiActivity, FiUsers, FiInfo, FiX
 } from 'react-icons/fi';
@@ -373,41 +373,37 @@ const BorrowingManagement = () => {
   const stats = getStats();
 
   return (
-    <div className="bg-gray-50 min-h-screen p-6">
+    <div className="bg-gray-50 min-h-screen p-2 sm:p-4 md:p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="mb-8">
-          <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-6 text-white shadow-xl">
-            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
-              <div className="flex items-center space-x-4">
-                <div className="bg-white/20 backdrop-blur-sm p-3 rounded-xl border border-white/30">
-                  <FiPackage className="w-8 h-8 text-white" />
+        <div className="mb-4 sm:mb-6 md:mb-8">
+          <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-6 text-white shadow-lg sm:shadow-xl">
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 sm:gap-4">
+              <div className="flex items-center space-x-3 sm:space-x-4">
+                <div className="bg-white/20 backdrop-blur-sm p-2 sm:p-2.5 md:p-3 rounded-lg sm:rounded-xl border border-white/30">
+                  <FiPackage className="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8 text-white" />
                 </div>
                 <div>
-                  <h1 className="text-3xl font-bold text-white drop-shadow-lg">จัดการการยืม-คืน</h1>
-                  <p className="text-blue-100 mt-1 font-medium">ติดตามและจัดการการยืมอุปกรณ์ทั้งหมด</p>
-                  <div className="flex items-center mt-2 space-x-4 text-sm">
-                    <span className="bg-white/20 px-3 py-1 rounded-full border border-white/30">
-                      <FiActivity className="inline w-4 h-4 mr-1 text-green-300" />
-                      <span className="text-white font-semibold">กำลังยืม: {stats.active}</span>
+                  <h1 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-white drop-shadow-lg">จัดการการยืม-คืน</h1>
+                  <p className="text-blue-100 mt-0.5 sm:mt-1 font-medium text-xs sm:text-sm">ติดตามและจัดการการยืมอุปกรณ์ทั้งหมด</p>
+                  <div className="flex items-center mt-1 sm:mt-2 space-x-2 sm:space-x-4 text-xs sm:text-sm">
+                    <span className="bg-white/20 px-2 py-0.5 sm:px-3 sm:py-1 rounded-full border border-white/30">
+                      <FiActivity className="inline w-3 h-3 sm:w-4 sm:h-4 mr-1 text-green-300" />
+                      <span className="text-white font-semibold"><span className="hidden sm:inline">กำลังยืม: </span>{stats.active}</span>
                     </span>
-                    <span className="bg-white/20 px-3 py-1 rounded-full border border-white/30">
-                      <FiAlertTriangle className="inline w-4 h-4 mr-1 text-red-300" />
-                      <span className="text-white font-semibold">เกินกำหนด: {stats.overdue}</span>
+                    <span className="bg-white/20 px-2 py-0.5 sm:px-3 sm:py-1 rounded-full border border-white/30">
+                      <FiAlertTriangle className="inline w-3 h-3 sm:w-4 sm:h-4 mr-1 text-red-300" />
+                      <span className="text-white font-semibold"><span className="hidden sm:inline">เกินกำหนด: </span>{stats.overdue}</span>
                     </span>
                   </div>
                 </div>
               </div>
-              <div className="flex items-center space-x-3 mt-4 lg:mt-0">
+              <div className="flex items-center space-x-2 sm:space-x-3 mt-3 lg:mt-0">
                 <button
                   onClick={fetchBorrowings}
-                  className="bg-white/20 hover:bg-white/30 p-3 rounded-xl transition-all duration-300 backdrop-blur-sm border border-white/30"
+                  className="bg-white/20 hover:bg-white/30 p-2 sm:p-2.5 md:p-3 rounded-lg sm:rounded-xl transition-all duration-300 backdrop-blur-sm border border-white/30"
                 >
-                  <FiRefreshCw className="w-5 h-5 text-white" />
-                </button>
-                <button className="bg-white/20 hover:bg-white/30 px-4 py-3 rounded-xl transition-all duration-300 backdrop-blur-sm border border-white/30 flex items-center space-x-2">
-                  <FiDownload className="w-4 h-4 text-white" />
-                  <span className="text-white">ส่งออก</span>
+                  <FiRefreshCw className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                 </button>
               </div>
             </div>
@@ -415,63 +411,63 @@ const BorrowingManagement = () => {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6 mb-4 sm:mb-6 md:mb-8">
+          <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg border border-gray-100 p-3 sm:p-4 md:p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">ทั้งหมด</p>
-                <p className="text-3xl font-bold text-gray-900">{stats.total}</p>
+                <p className="text-xs sm:text-sm font-medium text-gray-600">ทั้งหมด</p>
+                <p className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900">{stats.total}</p>
               </div>
-              <div className="bg-gray-100 p-3 rounded-xl">
-                <FiPackage className="w-8 h-8 text-gray-600" />
+              <div className="bg-gray-100 p-2 sm:p-2.5 md:p-3 rounded-lg sm:rounded-xl">
+                <FiPackage className="w-5 h-5 sm:w-6 sm:w-6 md:w-8 md:h-8 text-gray-600" />
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
+          <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg border border-gray-100 p-3 sm:p-4 md:p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">กำลังยืม</p>
-                <p className="text-3xl font-bold text-blue-600">{stats.active}</p>
+                <p className="text-xs sm:text-sm font-medium text-gray-600">กำลังยืม</p>
+                <p className="text-xl sm:text-2xl md:text-3xl font-bold text-blue-600">{stats.active}</p>
               </div>
-              <div className="bg-blue-100 p-3 rounded-xl">
-                <FiClock className="w-8 h-8 text-blue-600" />
+              <div className="bg-blue-100 p-2 sm:p-2.5 md:p-3 rounded-lg sm:rounded-xl">
+                <FiClock className="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8 text-blue-600" />
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
+          <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg border border-gray-100 p-3 sm:p-4 md:p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">เกินกำหนด</p>
-                <p className="text-3xl font-bold text-red-600">{stats.overdue}</p>
+                <p className="text-xs sm:text-sm font-medium text-gray-600">เกินกำหนด</p>
+                <p className="text-xl sm:text-2xl md:text-3xl font-bold text-red-600">{stats.overdue}</p>
               </div>
-              <div className="bg-red-100 p-3 rounded-xl">
-                <FiAlertTriangle className="w-8 h-8 text-red-600" />
+              <div className="bg-red-100 p-2 sm:p-2.5 md:p-3 rounded-lg sm:rounded-xl">
+                <FiAlertTriangle className="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8 text-red-600" />
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
+          <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg border border-gray-100 p-3 sm:p-4 md:p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">คืนแล้ว</p>
-                <p className="text-3xl font-bold text-green-600">{stats.returned}</p>
+                <p className="text-xs sm:text-sm font-medium text-gray-600">คืนแล้ว</p>
+                <p className="text-xl sm:text-2xl md:text-3xl font-bold text-green-600">{stats.returned}</p>
               </div>
-              <div className="bg-green-100 p-3 rounded-xl">
-                <FiCheckCircle className="w-8 h-8 text-green-600" />
+              <div className="bg-green-100 p-2 sm:p-2.5 md:p-3 rounded-lg sm:rounded-xl">
+                <FiCheckCircle className="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8 text-green-600" />
               </div>
             </div>
           </div>
         </div>
 
         {/* Filters */}
-        <div className="mb-8">
-          <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
-            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
-              <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
+        <div className="mb-4 sm:mb-6 md:mb-8">
+          <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg border border-gray-100 p-3 sm:p-4 md:p-6">
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-3 sm:space-y-4 lg:space-y-0 gap-3 sm:gap-4">
+              <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3 md:space-x-4">
                 <div className="relative">
-                  <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                  <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 sm:w-5 sm:h-5" />
                   <input
                     type="text"
                     placeholder="ค้นหาผู้ยืม หรือ อุปกรณ์..."

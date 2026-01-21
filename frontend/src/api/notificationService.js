@@ -20,7 +20,7 @@ export const getAllNotifications = async (params = {}) => {
  * ทำเครื่องหมายว่าอ่านแล้ว
  */
 export const markAsRead = async (notificationId) => {
-  const response = await api.put(`/notifications/${notificationId}/read`);
+  const response = await api.patch(`/notifications/${notificationId}/read`);
   return response.data;
 };
 

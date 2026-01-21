@@ -18,6 +18,8 @@ const CreditTransaction = require('./CreditTransaction');
 const ReturnTransaction = require('./ReturnTransaction');
 const Notification = require('./Notification');
 const SystemSettings = require('./SystemSettings');
+const PartialReturnPenalty = require('./PartialReturnPenalty');
+const PasswordReset = require('./PasswordReset');
 
 // ===================================================================
 // Define associations (Relationships)
@@ -101,6 +103,7 @@ EquipmentItem.hasMany(BorrowingTransactionItem, { foreignKey: 'item_id', as: 'tr
 // -------------------------------------------------------------------
 // ReturnTransaction associations
 // -------------------------------------------------------------------
+ReturnTransaction.belongsTo(BorrowingTransaction, { foreignKey: 'borrowing_id', as: 'borrowing' });
 ReturnTransaction.belongsTo(Member, { foreignKey: 'member_id', as: 'member' });
 ReturnTransaction.belongsTo(Admin, { foreignKey: 'inspected_by_admin', as: 'adminInspector' });
 ReturnTransaction.belongsTo(Equipment, { foreignKey: 'equipment_id', as: 'equipment' });
@@ -131,6 +134,12 @@ EquipmentItemHistory.belongsTo(EquipmentItem, { foreignKey: 'item_id', as: 'equi
 EquipmentItemHistory.belongsTo(Admin, { foreignKey: 'performed_by_admin', as: 'adminPerformer' });
 EquipmentItemHistory.belongsTo(Member, { foreignKey: 'performed_by_member', as: 'memberPerformer' });
 
+// -------------------------------------------------------------------
+// PartialReturnPenalty associations
+// -------------------------------------------------------------------
+PartialReturnPenalty.belongsTo(BorrowingTransaction, { foreignKey: 'borrowing_id', as: 'borrowing' });
+PartialReturnPenalty.belongsTo(Member, { foreignKey: 'member_id', as: 'member' });
+
 // ===================================================================
 // Export all models
 // ===================================================================
@@ -151,5 +160,7 @@ module.exports = {
   CreditTransaction,
   ReturnTransaction,
   Notification,
-  SystemSettings
+  SystemSettings,
+  PartialReturnPenalty,
+  PasswordReset
 };

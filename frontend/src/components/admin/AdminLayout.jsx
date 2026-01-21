@@ -26,8 +26,9 @@ const AdminLayout = () => {
 
   useEffect(() => {
     const handleResize = () => {
-      setIsMobileView(window.innerWidth < 1024);
-      if (window.innerWidth >= 1024) {
+      const isMobile = window.innerWidth < 1024;
+      setIsMobileView(isMobile);
+      if (!isMobile) {
         setIsSidebarOpen(true);
       } else {
         setIsSidebarOpen(false);
@@ -240,13 +241,13 @@ const AdminLayout = () => {
       {/* Overlay for mobile */}
       {isSidebarOpen && isMobileView && (
         <div 
-          className="fixed inset-0 bg-black bg-opacity-50 z-20" 
+          className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden" 
           onClick={() => setIsSidebarOpen(false)}
         ></div>
       )}
 
       {/* Sidebar */}
-      <aside className={`fixed lg:static inset-y-0 left-0 z-30 w-64 bg-gradient-to-b from-indigo-600 to-indigo-800 shadow-2xl transform ${
+      <aside className={`fixed lg:static inset-y-0 left-0 z-50 lg:z-auto w-64 bg-gradient-to-b from-indigo-600 to-indigo-800 shadow-2xl transform ${
         isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
       } lg:translate-x-0 transition-transform duration-300 ease-in-out overflow-y-auto`}>
         {/* Sidebar Header */}

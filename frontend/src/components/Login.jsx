@@ -303,9 +303,9 @@ const Login = () => {
               </div>
 
               <div className="text-sm">
-                <a href="#forgot-password" className="font-semibold text-indigo-600 hover:text-indigo-700 transition-colors duration-200">
+                <Link to="/forgot-password" className="font-semibold text-indigo-600 hover:text-indigo-700 transition-colors duration-200">
                   ลืมรหัสผ่าน?
-                </a>
+                </Link>
               </div>
             </div>
 

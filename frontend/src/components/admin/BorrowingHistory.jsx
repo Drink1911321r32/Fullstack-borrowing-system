@@ -193,91 +193,91 @@ const BorrowingHistory = () => {
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="min-h-screen bg-gray-50 p-2 sm:p-4 md:p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="mb-6">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">ประวัติการยืม-คืน</h1>
-          <p className="text-gray-600">แสดงประวัติการยืม-คืนอุปกรณ์ทั้งหมดในระบบ</p>
+        <div className="mb-4 sm:mb-6">
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 mb-2">ประวัติการยืม-คืน</h1>
+          <p className="text-sm sm:text-base text-gray-600">แสดงประวัติการยืม-คืนอุปกรณ์ทั้งหมดในระบบ</p>
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-8 gap-4 mb-6">
-          <div className="bg-white rounded-lg shadow p-4 border-l-4 border-indigo-500">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-2 sm:gap-3 md:gap-4 mb-4 sm:mb-6">
+          <div className="bg-white rounded-lg shadow p-2 sm:p-3 md:p-4 border-l-4 border-indigo-500">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs text-gray-600">ทั้งหมด</p>
-                <p className="text-xl font-bold text-gray-900">{stats.total}</p>
+                <p className="text-lg sm:text-xl font-bold text-gray-900">{stats.total}</p>
               </div>
-              <FiPackage className="text-indigo-500" size={24} />
+              <FiPackage className="text-indigo-500" size={20} />
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow p-4 border-l-4 border-yellow-500">
+          <div className="bg-white rounded-lg shadow p-2 sm:p-3 md:p-4 border-l-4 border-yellow-500">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs text-gray-600">รออนุมัติ</p>
-                <p className="text-xl font-bold text-gray-900">{stats.pending}</p>
+                <p className="text-lg sm:text-xl font-bold text-gray-900">{stats.pending}</p>
               </div>
-              <FiClock className="text-yellow-500" size={24} />
+              <FiClock className="text-yellow-500" size={20} />
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow p-4 border-l-4 border-blue-500">
+          <div className="bg-white rounded-lg shadow p-2 sm:p-3 md:p-4 border-l-4 border-blue-500">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs text-gray-600">อนุมัติแล้ว</p>
-                <p className="text-xl font-bold text-gray-900">{stats.approved}</p>
+                <p className="text-lg sm:text-xl font-bold text-gray-900">{stats.approved}</p>
               </div>
-              <FiCheckCircle className="text-blue-500" size={24} />
+              <FiCheckCircle className="text-blue-500" size={20} />
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow p-4 border-l-4 border-indigo-500">
+          <div className="bg-white rounded-lg shadow p-2 sm:p-3 md:p-4 border-l-4 border-indigo-500">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs text-gray-600">กำลังยืม</p>
-                <p className="text-xl font-bold text-gray-900">{stats.borrowed}</p>
+                <p className="text-lg sm:text-xl font-bold text-gray-900">{stats.borrowed}</p>
               </div>
-              <FiBox className="text-indigo-500" size={24} />
+              <FiBox className="text-indigo-500" size={20} />
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow p-4 border-l-4 border-green-500">
+          <div className="bg-white rounded-lg shadow p-2 sm:p-3 md:p-4 border-l-4 border-green-500">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs text-gray-600">คืนแล้ว</p>
-                <p className="text-xl font-bold text-gray-900">{stats.completed}</p>
+                <p className="text-lg sm:text-xl font-bold text-gray-900">{stats.completed}</p>
               </div>
-              <FiCheckCircle className="text-green-500" size={24} />
+              <FiCheckCircle className="text-green-500" size={20} />
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow p-4 border-l-4 border-red-500">
+          <div className="bg-white rounded-lg shadow p-2 sm:p-3 md:p-4 border-l-4 border-red-500">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs text-gray-600">เกินกำหนด</p>
-                <p className="text-xl font-bold text-gray-900">{stats.overdue}</p>
+                <p className="text-lg sm:text-xl font-bold text-gray-900">{stats.overdue}</p>
               </div>
-              <FiAlertCircle className="text-red-500" size={24} />
+              <FiAlertCircle className="text-red-500" size={20} />
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow p-4 border-l-4 border-red-500">
+          <div className="bg-white rounded-lg shadow p-2 sm:p-3 md:p-4 border-l-4 border-red-500">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs text-gray-600">ปฏิเสธ</p>
-                <p className="text-xl font-bold text-gray-900">{stats.rejected}</p>
+                <p className="text-lg sm:text-xl font-bold text-gray-900">{stats.rejected}</p>
               </div>
-              <FiXCircle className="text-red-500" size={24} />
+              <FiXCircle className="text-red-500" size={20} />
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow p-4 border-l-4 border-gray-500">
+          <div className="bg-white rounded-lg shadow p-2 sm:p-3 md:p-4 border-l-4 border-gray-500">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs text-gray-600">ยกเลิก</p>
-                <p className="text-xl font-bold text-gray-900">{stats.cancelled}</p>
+                <p className="text-lg sm:text-xl font-bold text-gray-900">{stats.cancelled}</p>
               </div>
               <FiXCircle className="text-gray-500" size={24} />
             </div>

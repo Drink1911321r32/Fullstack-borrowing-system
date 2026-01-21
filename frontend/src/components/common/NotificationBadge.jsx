@@ -100,10 +100,10 @@ const NotificationBadge = () => {
               ) : (
                 recentNotifications.map((notification) => (
                   <div
-                    key={notification.notification_id}
+                    key={notification.notification_id || notification.id}
                     onClick={() => {
                       if (!notification.is_read) {
-                        markAsRead(notification.notification_id);
+                        markAsRead(notification.notification_id || notification.id);
                       }
                       if (notification.action_url) {
                         navigate(notification.action_url);

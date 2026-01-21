@@ -1,6 +1,6 @@
-﻿import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { FiMenu, FiX, FiChevronRight, FiCheck, FiUsers, FiPackage, FiClipboard } from 'react-icons/fi';
+import { FiMenu, FiX, FiChevronRight, FiCheck, FiUsers, FiPackage, FiClipboard, FiChevronDown, FiBookOpen, FiBriefcase } from 'react-icons/fi';
 import { STORAGE_KEYS } from '../constants';
 import axios from 'axios';
 
@@ -10,6 +10,10 @@ const Welcome = () => {
   const [userRole, setUserRole] = useState('');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [systemName, setSystemName] = useState('ระบบยืม-คืนและเบิกจ่ายวัสดุ');
+  const [showRegisterDropdown, setShowRegisterDropdown] = useState(false);
+  const [showMobileRegisterDropdown, setShowMobileRegisterDropdown] = useState(false);
+  const dropdownRef = useRef(null);
+  const mobileDropdownRef = useRef(null);
 
   useEffect(() => {
     const token = localStorage.getItem(STORAGE_KEYS.TOKEN);
@@ -38,10 +42,29 @@ const Welcome = () => {
       }
     };
     fetchSystemName();
+
+    // Handle click outside to close dropdowns
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowRegisterDropdown(false);
+      }
+      if (mobileDropdownRef.current && !mobileDropdownRef.current.contains(event.target)) {
+        setShowMobileRegisterDropdown(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
   }, []);
 
   const handleLogin = () => navigate('/login');
-  const handleRegister = () => navigate('/register');
+  const handleRegister = (userType = 'student') => {
+    navigate('/register', { state: { userType } });
+    setShowRegisterDropdown(false);
+    setShowMobileRegisterDropdown(false);
+  };
   const handleDashboard = () => {
     if (userRole === 'admin') navigate('/admin/dashboard');
     else navigate('/user/dashboard');
@@ -66,7 +89,57 @@ const Welcome = () => {
               ) : (
                 <div className="flex space-x-3">
                   <button onClick={handleLogin} className="px-4 py-2 text-sm font-medium rounded-full text-indigo-600 border border-indigo-600 hover:bg-indigo-50">เข้าสู่ระบบ</button>
-                  <button onClick={handleRegister} className="px-4 py-2 text-sm font-medium rounded-full text-white bg-indigo-600 hover:bg-indigo-700">สมัครสมาชิก</button>
+                  <div className="relative" ref={dropdownRef}>
+                    <button 
+                      onClick={() => setShowRegisterDropdown(!showRegisterDropdown)}
+                      className="px-4 py-2 text-sm font-medium rounded-full text-white bg-indigo-600 hover:bg-indigo-700 flex items-center gap-1"
+                    >
+                      สมัครสมาชิก
+                      <FiChevronDown className={`transition-transform ${showRegisterDropdown ? 'rotate-180' : ''}`} />
+                    </button>
+                    {showRegisterDropdown && (
+                      <div className="absolute right-0 mt-3 w-56 bg-white rounded-xl shadow-2xl z-20 border border-gray-100 overflow-hidden animate-fadeIn">
+                        <div className="py-2">
+                          <button
+                            onClick={() => handleRegister('student')}
+                            className="group flex items-center w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gradient-to-r hover:from-indigo-50 hover:to-purple-50 transition-all duration-200"
+                          >
+                            <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-100 text-indigo-600 mr-3 group-hover:scale-110 transition-transform">
+                              <FiUsers className="h-4 w-4" />
+                            </div>
+                            <div>
+                              <div className="font-semibold text-gray-800 group-hover:text-indigo-600">นักศึกษา</div>
+                              <div className="text-xs text-gray-500">สำหรับนักศึกษา</div>
+                            </div>
+                          </button>
+                          <button
+                            onClick={() => handleRegister('faculty')}
+                            className="group flex items-center w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gradient-to-r hover:from-indigo-50 hover:to-purple-50 transition-all duration-200"
+                          >
+                            <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-purple-100 text-purple-600 mr-3 group-hover:scale-110 transition-transform">
+                              <FiBookOpen className="h-4 w-4" />
+                            </div>
+                            <div>
+                              <div className="font-semibold text-gray-800 group-hover:text-purple-600">อาจารย์</div>
+                              <div className="text-xs text-gray-500">สำหรับอาจารย์</div>
+                            </div>
+                          </button>
+                          <button
+                            onClick={() => handleRegister('staff')}
+                            className="group flex items-center w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gradient-to-r hover:from-indigo-50 hover:to-purple-50 transition-all duration-200"
+                          >
+                            <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-pink-100 text-pink-600 mr-3 group-hover:scale-110 transition-transform">
+                              <FiBriefcase className="h-4 w-4" />
+                            </div>
+                            <div>
+                              <div className="font-semibold text-gray-800 group-hover:text-pink-600">เจ้าหน้าที่</div>
+                              <div className="text-xs text-gray-500">สำหรับเจ้าหน้าที่</div>
+                            </div>
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
               )}
             </div>
@@ -91,7 +164,57 @@ const Welcome = () => {
               ) : (
                 <div className="space-y-3">
                   <button onClick={handleLogin} className="w-full py-2 px-4 rounded-full text-indigo-600 border border-indigo-600 hover:bg-indigo-50">เข้าสู่ระบบ</button>
-                  <button onClick={handleRegister} className="w-full py-2 px-4 rounded-full text-white bg-indigo-600 hover:bg-indigo-700">สมัครสมาชิก</button>
+                  <div className="relative" ref={mobileDropdownRef}>
+                    <button 
+                      onClick={() => setShowMobileRegisterDropdown(!showMobileRegisterDropdown)}
+                      className="w-full py-2 px-4 rounded-full text-white bg-indigo-600 hover:bg-indigo-700 flex items-center justify-center gap-1"
+                    >
+                      สมัครสมาชิก
+                      <FiChevronDown className={`transition-transform ${showMobileRegisterDropdown ? 'rotate-180' : ''}`} />
+                    </button>
+                    {showMobileRegisterDropdown && (
+                      <div className="mt-3 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden animate-fadeIn">
+                        <div className="py-2">
+                          <button
+                            onClick={() => handleRegister('student')}
+                            className="group flex items-center w-full px-4 py-3 text-sm text-gray-700 hover:bg-gradient-to-r hover:from-indigo-50 hover:to-purple-50 transition-all duration-200"
+                          >
+                            <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-100 text-indigo-600 mr-3 group-hover:scale-110 transition-transform">
+                              <FiUsers className="h-4 w-4" />
+                            </div>
+                            <div className="text-left">
+                              <div className="font-semibold text-gray-800 group-hover:text-indigo-600">นักศึกษา</div>
+                              <div className="text-xs text-gray-500">สำหรับนักศึกษา</div>
+                            </div>
+                          </button>
+                          <button
+                            onClick={() => handleRegister('faculty')}
+                            className="group flex items-center w-full px-4 py-3 text-sm text-gray-700 hover:bg-gradient-to-r hover:from-indigo-50 hover:to-purple-50 transition-all duration-200"
+                          >
+                            <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-purple-100 text-purple-600 mr-3 group-hover:scale-110 transition-transform">
+                              <FiBookOpen className="h-4 w-4" />
+                            </div>
+                            <div className="text-left">
+                              <div className="font-semibold text-gray-800 group-hover:text-purple-600">อาจารย์</div>
+                              <div className="text-xs text-gray-500">สำหรับอาจารย์</div>
+                            </div>
+                          </button>
+                          <button
+                            onClick={() => handleRegister('staff')}
+                            className="group flex items-center w-full px-4 py-3 text-sm text-gray-700 hover:bg-gradient-to-r hover:from-indigo-50 hover:to-purple-50 transition-all duration-200"
+                          >
+                            <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-pink-100 text-pink-600 mr-3 group-hover:scale-110 transition-transform">
+                              <FiBriefcase className="h-4 w-4" />
+                            </div>
+                            <div className="text-left">
+                              <div className="font-semibold text-gray-800 group-hover:text-pink-600">เจ้าหน้าที่</div>
+                              <div className="text-xs text-gray-500">สำหรับเจ้าหน้าที่</div>
+                            </div>
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
               )}
             </div>
@@ -116,8 +239,11 @@ const Welcome = () => {
               </button>
             ) : (
               <>
-                <button onClick={handleRegister} className="px-6 py-3 text-base font-medium rounded-full text-white bg-indigo-600 hover:bg-indigo-700">
-                  เริ่มต้นใช้งาน <FiChevronRight className="inline ml-2" />
+                <button 
+                  onClick={handleLogin}
+                  className="w-full sm:w-auto px-6 py-3 text-base font-medium rounded-full text-white bg-indigo-600 hover:bg-indigo-700 flex items-center justify-center gap-2"
+                >
+                  เริ่มต้นใช้งาน <FiChevronRight className="inline" />
                 </button>
                 <button onClick={handleLogin} className="px-6 py-3 text-base font-medium rounded-full text-gray-700 border border-gray-300 bg-white hover:bg-gray-50">
                   เข้าสู่ระบบ

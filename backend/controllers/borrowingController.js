@@ -513,6 +513,16 @@ const approveBorrowingOld = async (req, res, existingConnection = null) => {
       });
     }
 
+    // เช็คว่าเครดิตต้องไม่ติดลบก่อนยืม (แต่สามารถติดลบได้หลังหักค่าปรับ)
+    if (user[0].credit < 0) {
+      await connection.rollback();
+      return res.status(400).json({
+        success: false,
+        message: `ไม่สามารถยืมได้เนื่องจากเครดิตติดลบ (${user[0].credit} เครดิต) กรุณาเติมเครดิตก่อน`
+      });
+    }
+
+    // เช็คว่าเครดิตหลังหักเพียงพอหรือไม่
     if (user[0].credit < totalCreditNeeded) {
       await connection.rollback();
       return res.status(400).json({
@@ -613,7 +623,7 @@ const approveBorrowingOld = async (req, res, existingConnection = null) => {
     const inventoryEmitter = require('../utils/inventoryEventEmitter');
     inventoryEmitter.notifyInventoryChange('borrow-approved', { borrowingsToApprove: borrowingsToApprove.map(b => b.transaction_id) });
 
-    // แจ้งเตือนผู้ยืมทุกรายการ - ดึงข้อมูลอุปกรณ์ทั้งหมดครั้งเดียว (แก้ N+1 Query)
+    // แจ้งเตือนผู้ยืมทุกรายการ - รวมเป็นการแจ้งเตือนเดียว
     const equipmentIds = borrowingsToApprove.map(b => b.equipment_id);
     const [equipmentData] = await connection.query(
       'SELECT equipment_id, equipment_name FROM equipments WHERE equipment_id IN (?)',
@@ -623,12 +633,42 @@ const approveBorrowingOld = async (req, res, existingConnection = null) => {
     // สร้าง Map สำหรับ O(1) lookup
     const equipmentMap = new Map(equipmentData.map(eq => [eq.equipment_id, eq.equipment_name]));
     
-    for (const b of borrowingsToApprove) {
+    // รวมการแจ้งเตือนหลายรายการเป็นหนึ่งเดียว
+    if (borrowingsToApprove.length === 1) {
+      // ถ้ามีการแจ้งเตือนเดียว ส่งตามปกติ
+      const b = borrowingsToApprove[0];
       notifyBorrowApproved({
         user_id: userId,
         transaction_id: b.transaction_id,
         equipment_name: equipmentMap.get(b.equipment_id) || 'อุปกรณ์'
       }).catch(err => console.error('Notification error:', err));
+    } else if (borrowingsToApprove.length > 1) {
+      // ถ้ามีหลายรายการ ส่งการแจ้งเตือนรวม
+      const { createNotification, sendNotificationToUser } = require('../utils/notificationHelper').exports || require('../controllers/notificationController');
+      const equipmentNames = borrowingsToApprove
+        .map(b => equipmentMap.get(b.equipment_id) || 'อุปกรณ์')
+        .join(', ');
+      
+      const result = await createNotification(userId, {
+        type: 'borrow_approved',
+        title: 'อนุมัติคำขอยืม',
+        message: `คำขอยืม ${borrowingsToApprove.length} รายการได้รับการอนุมัติแล้ว: ${equipmentNames}`,
+        priority: 'high',
+        reference_id: borrowingsToApprove[0].transaction_id,
+        reference_type: 'borrowing'
+      });
+      
+      if (result.success) {
+        sendNotificationToUser(userId, {
+          notification_id: result.notification_id,
+          type: 'borrow_approved',
+          title: 'อนุมัติคำขอยืม',
+          message: `คำขอยืม ${borrowingsToApprove.length} รายการได้รับการอนุมัติแล้ว: ${equipmentNames}`,
+          priority: 'high',
+          is_read: false,
+          created_at: new Date()
+        });
+      }
     }
 
     res.json({

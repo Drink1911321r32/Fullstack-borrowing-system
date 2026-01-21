@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import { 
   FiEdit, FiTrash2, FiSearch, FiFilter, FiPlus, FiCheck, FiX, FiPackage, 
-  FiRefreshCw, FiDownload, FiSettings, FiTag, FiStar, FiAlertCircle,
+  FiRefreshCw, FiSettings, FiTag, FiStar, FiAlertCircle,
   FiTool, FiCpu, FiPlusCircle, FiMonitor, FiPrinter, FiCamera, FiHeadphones,
   FiMic, FiSpeaker, FiWifi, FiHardDrive, FiBook, FiClipboard, FiLayers,
   FiGrid, FiBox, FiShoppingCart, FiTrendingUp, FiActivity, FiEye, FiList
@@ -327,7 +327,7 @@ const AddCategory = () => {
   };
 
   return (
-    <div className="bg-gray-50 min-h-screen p-6">
+    <div className="bg-gray-50 min-h-screen p-2 sm:p-4 md:p-6">
       <div className="pb-6">
         {/* ส่วนหัวที่ปรับปรุงใหม่ */}
         <div className="mb-8">
@@ -357,9 +357,6 @@ const AddCategory = () => {
                 disabled={isRefreshing}
               >
                 <FiRefreshCw className={`w-5 h-5 text-white ${isRefreshing ? 'animate-spin' : ''}`} />
-              </button>
-              <button className="bg-white/20 hover:bg-white/30 p-3 rounded-xl transition-all duration-300 backdrop-blur-sm border border-white/30">
-                <FiDownload className="w-5 h-5 text-white" />
               </button>
             </div>
           </div>

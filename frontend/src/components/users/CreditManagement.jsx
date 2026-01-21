@@ -215,7 +215,7 @@ const CreditManagement = () => {
   const stats = getStats();
 
   return (
-    <div className="bg-gray-50 min-h-screen p-6">
+    <div className="bg-gray-50 min-h-screen p-2 sm:p-4 md:p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
@@ -231,7 +231,9 @@ const CreditManagement = () => {
                   <div className="flex items-center mt-2 space-x-4 text-sm">
                     <span className="bg-white/20 px-3 py-1 rounded-full border border-white/30">
                       <FiDollarSign className="inline w-4 h-4 mr-1 text-yellow-300" />
-                      <span className="text-white font-semibold">เครดิตปัจจุบัน: {creditInfo.current_credit}</span>
+                      <span className={`font-semibold ${
+                        creditInfo.current_credit < 0 ? 'text-red-300' : 'text-white'
+                      }`}>เครดิตปัจจุบัน: {creditInfo.current_credit}</span>
                     </span>
                   </div>
                 </div>
@@ -252,27 +254,42 @@ const CreditManagement = () => {
         </div>
 
         {/* Credit Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 md:gap-6 mb-6 sm:mb-8">
           {/* Current Credit */}
           <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">เครดิตปัจจุบัน</p>
-                <p className="text-3xl font-bold text-indigo-600">{creditInfo.current_credit}</p>
+                <p className={`text-3xl font-bold ${
+                  creditInfo.current_credit < 0 ? 'text-red-600' : 'text-indigo-600'
+                }`}>{creditInfo.current_credit}</p>
               </div>
-              <div className="bg-indigo-100 p-3 rounded-xl">
-                <FiCreditCard className="w-8 h-8 text-indigo-600" />
+              <div className={`p-3 rounded-xl ${
+                creditInfo.current_credit < 0 ? 'bg-red-100' : 'bg-indigo-100'
+              }`}>
+                <FiCreditCard className={`w-8 h-8 ${
+                  creditInfo.current_credit < 0 ? 'text-red-600' : 'text-indigo-600'
+                }`} />
               </div>
             </div>
             <div className="mt-4">
               <div className="w-full bg-gray-200 rounded-full h-2">
                 <div 
-                  className="bg-indigo-600 h-2 rounded-full transition-all duration-300"
-                  style={{ width: `${(creditInfo.current_credit / creditInfo.initial_credit) * 100}%` }}
+                  className={`h-2 rounded-full transition-all duration-300 ${
+                    creditInfo.current_credit < 0 ? 'bg-red-600' : 'bg-indigo-600'
+                  }`}
+                  style={{ 
+                    width: creditInfo.current_credit < 0 
+                      ? '100%' 
+                      : `${Math.min(100, (creditInfo.current_credit / creditInfo.initial_credit) * 100)}%` 
+                  }}
                 ></div>
               </div>
               <p className="text-xs text-gray-500 mt-1">
-                {((creditInfo.current_credit / creditInfo.initial_credit) * 100).toFixed(1)}% ของเครดิตเริ่มต้น
+                {creditInfo.current_credit < 0 
+                  ? `ติดลบ ${Math.abs(creditInfo.current_credit)} เครดิต`
+                  : `${((creditInfo.current_credit / creditInfo.initial_credit) * 100).toFixed(1)}% ของเครดิตเริ่มต้น`
+                }
               </p>
             </div>
           </div>

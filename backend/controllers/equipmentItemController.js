@@ -575,15 +575,25 @@ exports.getItemHistory = async (req, res) => {
 };
 
 // ฟังก์ชันบันทึกประวัติการใช้งานอุปกรณ์
-exports.addItemHistory = async (itemId, actionType, performedBy, borrowingTransactionId = null, notes = null) => {
+exports.addItemHistory = async (itemId, actionType, performedBy, borrowingTransactionId = null, notes = null, isAdmin = false) => {
   try {
+    const performedByAdmin = isAdmin ? performedBy : null;
+    const performedByMember = !isAdmin ? performedBy : null;
+    
     const query = `
       INSERT INTO equipment_item_history 
-      (item_id, transaction_id, action_type, action_date, performed_by, notes)
-      VALUES (?, ?, ?, NOW(), ?, ?)
+      (item_id, transaction_id, action_type, action_date, performed_by_admin, performed_by_member, notes)
+      VALUES (?, ?, ?, NOW(), ?, ?, ?)
     `;
     
-    await pool.query(query, [itemId, borrowingTransactionId, actionType, performedBy, notes]);
+    await pool.query(query, [
+      itemId, 
+      borrowingTransactionId, 
+      actionType, 
+      performedByAdmin, 
+      performedByMember, 
+      notes
+    ]);
     return true;
   } catch (error) {
     console.error('❌ Error adding item history:', error);

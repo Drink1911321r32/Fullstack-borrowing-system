@@ -39,7 +39,7 @@ const manageCreditByAdmin = async (connection, userId, { action, amount, reason,
     transactionType = 'adjustment';
   } else if (action === 'deduct') {
     creditChange = -parseFloat(amount);
-    newCredit = Math.max(0, currentCredit + creditChange);
+    newCredit = currentCredit + creditChange; // อนุญาตให้ติดลบได้
     description = `Admin หักเครดิต ${Math.abs(creditChange)} - เหตุผล: ${reason}`;
     transactionType = 'penalty';
   } else if (action === 'reset') {
@@ -158,6 +158,7 @@ const getAllCreditHistoryData = async (type = 'all', limit = 50) => {
       m.first_name as user_first_name,
       m.last_name as user_last_name,
       m.email as user_email,
+      m.profile_image as user_profile_image,
       ct.amount,
       ct.transaction_type,
       ct.reference_type,
@@ -168,7 +169,8 @@ const getAllCreditHistoryData = async (type = 'all', limit = 50) => {
       ct.created_by_admin,
       a.first_name as admin_first_name,
       a.last_name as admin_last_name,
-      a.email as admin_email
+      a.email as admin_email,
+      a.profile_image as admin_profile_image
     FROM credit_transactions ct
     LEFT JOIN members m ON ct.member_id = m.member_id
     LEFT JOIN admins a ON ct.created_by_admin = a.admin_id

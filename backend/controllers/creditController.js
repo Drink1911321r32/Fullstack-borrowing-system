@@ -129,15 +129,8 @@ const adjustUserCredit = async (req, res) => {
       });
     }
 
-    // ตรวจสอบว่าเครดิตไม่ติดลบ
+    // คำนวณเครดิตใหม่ (อนุญาตให้ติดลบได้)
     const newCredit = user[0].credit + parseInt(amount);
-    if (newCredit < 0) {
-      await connection.rollback();
-      return res.status(400).json({
-        success: false,
-        message: 'เครดิตไม่สามารถติดลบได้'
-      });
-    }
 
     // อัปเดทเครดิต
     await connection.query(

@@ -333,14 +333,20 @@ const UserProfile = () => {
         </div>
 
         {/* Stats Cards - Compact */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-          <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-xl shadow-md p-4 text-white">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+          <div className={`rounded-xl shadow-md p-4 text-white ${
+            (userData?.credit || 0) < 0 
+              ? 'bg-gradient-to-br from-red-500 to-red-600' 
+              : 'bg-gradient-to-br from-green-500 to-green-600'
+          }`}>
             <div className="flex items-center justify-between mb-2">
               <div className="p-2 bg-white/20 backdrop-blur-sm rounded-lg">
                 <FiCreditCard className="w-5 h-5" />
               </div>
             </div>
-            <p className="text-xs font-semibold text-green-100">เครดิตคงเหลือ</p>
+            <p className={`text-xs font-semibold ${
+              (userData?.credit || 0) < 0 ? 'text-red-100' : 'text-green-100'
+            }`}>เครดิตคงเหลือ</p>
             <p className="text-2xl font-bold mt-1">{userData?.credit || 0}</p>
           </div>
 

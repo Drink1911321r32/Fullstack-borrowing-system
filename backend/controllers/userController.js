@@ -110,9 +110,9 @@ exports.register = async (req, res) => {
     
     // ตรวจสอบ credit ถ้ามีการส่งมา
     const userCredit = credit ? Number(credit) : defaultCredit;
-    if (isNaN(userCredit) || userCredit < 0 || userCredit > 10000) {
+    if (isNaN(userCredit) || userCredit < -10000 || userCredit > 10000) {
       return res.status(HTTP_STATUS.BAD_REQUEST).json(
-        formatErrorResponse('เครดิตต้องเป็นตัวเลขระหว่าง 0-10,000', HTTP_STATUS.BAD_REQUEST)
+        formatErrorResponse('เครดิตต้องเป็นตัวเลขระหว่าง -10,000 ถึง 10,000', HTTP_STATUS.BAD_REQUEST)
       );
     }
     
@@ -1045,12 +1045,16 @@ exports.getUserReports = async (req, res) => {
       LIMIT 5
     `, [userId, startDate, endDate]);
 
+    // คำนวณ total สำหรับหา percentage
+    const totalBorrowings = categoryStats.reduce((sum, item) => sum + item.value, 0);
+    
     const colors = ['#8884d8', '#82ca9d', '#ffc658', '#ff7c7c', '#8dd1e1'];
     const equipment_categories = categoryStats.map((item, index) => ({
       name: item.name,
       value: item.value,
       equipments: item.equipments,
-      color: colors[index % colors.length]
+      color: colors[index % colors.length],
+      percent: totalBorrowings > 0 ? item.value / totalBorrowings : 0
     }));
 
     // 5. กิจกรรมล่าสุด
@@ -1080,8 +1084,8 @@ exports.getUserReports = async (req, res) => {
     }));
 
     // 6. คะแนนประเมิน
-    const totalBorrowings = overview.total_borrowings || 1;
-    const punctuality_score = Math.round((overview.on_time_returns / totalBorrowings) * 100);
+    const totalBorrowingsForScore = overview.total_borrowings || 1;
+    const punctuality_score = Math.round((overview.on_time_returns / totalBorrowingsForScore) * 100);
     
     // คะแนนการดูแลอุปกรณ์ (ตรวจสอบจากสถานะอุปกรณ์ที่คืน)
     const [equipmentCondition] = await pool.query(`
@@ -1285,7 +1289,7 @@ exports.exportUserReportExcel = async (req, res) => {
     }
 
     // สร้าง Excel
-    const excelBuffer = generateUserReportExcel(reportData, dateLabel, userData);
+    const excelBuffer = await generateUserReportExcel(reportData, dateLabel, userData);
 
     // ส่งไฟล์ Excel
     const filename = `user-report-${userId}-${dateRange || 'custom'}-${Date.now()}.xlsx`;

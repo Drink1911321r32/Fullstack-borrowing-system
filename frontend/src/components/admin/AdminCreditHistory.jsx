@@ -7,6 +7,7 @@ import {
 import { toast } from 'react-toastify';
 import { getAllCreditHistory } from '../../api/adminService';
 import { API_URL } from '../../api/api';
+import * as XLSX from 'xlsx';
 
 const AdminCreditHistory = () => {
   const [creditHistory, setCreditHistory] = useState([]);
@@ -96,9 +97,9 @@ const AdminCreditHistory = () => {
   const filteredHistory = creditHistory.filter(transaction => {
     const matchesType = !filterType || transaction.transaction_type === filterType;
     const matchesSearch = !searchTerm || 
-      transaction.first_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      transaction.last_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      transaction.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      transaction.user_first_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      transaction.user_last_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      transaction.user_email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       transaction.description?.toLowerCase().includes(searchTerm.toLowerCase());
     
     return matchesType && matchesSearch;
@@ -122,27 +123,38 @@ const AdminCreditHistory = () => {
   };
 
   const handleExport = () => {
-    const headers = ['วันที่', 'ผู้ใช้', 'ประเภท', 'จำนวน', 'ยอดคงเหลือ', 'รายละเอียด', 'ผู้ดำเนินการ'];
-    const csvData = filteredHistory.map(transaction => [
-      formatDate(transaction.created_at),
-      `${transaction.first_name} ${transaction.last_name}`,
-      getTransactionTypeLabel(transaction.transaction_type),
-      transaction.amount > 0 ? `+${transaction.amount}` : transaction.amount,
-      transaction.balance_after,
-      transaction.description || '-',
-      transaction.creator_first_name ? `${transaction.creator_first_name} ${transaction.creator_last_name}` : '-'
-    ]);
+    // เตรียมข้อมูลสำหรับ Excel
+    const exportData = filteredHistory.map(transaction => ({
+      'วันที่': formatDate(transaction.created_at),
+      'ผู้ใช้': `${transaction.user_first_name || ''} ${transaction.user_last_name || ''}`.trim() || '-',
+      'ประเภท': getTransactionTypeLabel(transaction.transaction_type),
+      'จำนวน': transaction.amount || 0,
+      'ยอดคงเหลือ': transaction.balance_after || 0,
+      'รายละเอียด': transaction.description || '-',
+      'ผู้ดำเนินการ': transaction.admin_first_name 
+        ? `${transaction.admin_first_name} ${transaction.admin_last_name || ''}`.trim() 
+        : '-'
+    }));
 
-    const csvContent = [
-      headers.join(','),
-      ...csvData.map(row => row.map(cell => `"${cell}"`).join(','))
-    ].join('\n');
+    // สร้าง workbook และ worksheet
+    const ws = XLSX.utils.json_to_sheet(exportData);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'ประวัติเครดิต');
 
-    const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = `credit_history_${new Date().getTime()}.csv`;
-    link.click();
+    // กำหนดความกว้างของคอลัมน์
+    const colWidths = [
+      { wch: 22 }, // วันที่
+      { wch: 30 }, // ผู้ใช้
+      { wch: 18 }, // ประเภท
+      { wch: 12 }, // จำนวน
+      { wch: 15 }, // ยอดคงเหลือ
+      { wch: 60 }, // รายละเอียด (เพิ่มความกว้าง)
+      { wch: 30 }  // ผู้ดำเนินการ
+    ];
+    ws['!cols'] = colWidths;
+
+    // Export เป็นไฟล์ Excel
+    XLSX.writeFile(wb, `credit_history_${new Date().getTime()}.xlsx`);
     
     toast.success('ส่งออกข้อมูลสำเร็จ');
   };
@@ -411,11 +423,11 @@ const AdminCreditHistory = () => {
                     </td>
                     <td className="px-6 py-5 whitespace-nowrap">
                       <div className="flex items-center space-x-3">
-                        {transaction.profile_image ? (
+                        {transaction.user_profile_image ? (
                           <div className="flex-shrink-0 w-10 h-10 rounded-full overflow-hidden border-2 border-gray-200">
                             <img
-                              src={getProfileImageUrl(transaction.profile_image)}
-                              alt={`${transaction.first_name} ${transaction.last_name}`}
+                              src={getProfileImageUrl(transaction.user_profile_image)}
+                              alt={`${transaction.user_first_name} ${transaction.user_last_name}`}
                               className="w-full h-full object-cover"
                               onError={(e) => {
                                 e.target.onerror = null;
@@ -430,9 +442,9 @@ const AdminCreditHistory = () => {
                         )}
                         <div>
                           <div className="text-sm font-semibold text-gray-900">
-                            {transaction.first_name} {transaction.last_name}
+                            {transaction.user_first_name} {transaction.user_last_name}
                           </div>
-                          <div className="text-xs text-gray-500">{transaction.email}</div>
+                          <div className="text-xs text-gray-500">{transaction.user_email}</div>
                         </div>
                       </div>
                     </td>
@@ -481,13 +493,13 @@ const AdminCreditHistory = () => {
                       </div>
                     </td>
                     <td className="px-6 py-5 whitespace-nowrap">
-                      {transaction.created_by_admin && transaction.creator_first_name ? (
+                      {transaction.created_by_admin && transaction.admin_first_name ? (
                         <div className="flex items-center space-x-2">
                           <div className="w-8 h-8 rounded-full overflow-hidden bg-gradient-to-br from-blue-400 to-indigo-400">
-                            {transaction.creator_profile_image ? (
+                            {transaction.admin_profile_image ? (
                               <img
-                                src={getProfileImageUrl(transaction.creator_profile_image)}
-                                alt={`${transaction.creator_first_name} ${transaction.creator_last_name}`}
+                                src={getProfileImageUrl(transaction.admin_profile_image)}
+                                alt={`${transaction.admin_first_name} ${transaction.admin_last_name}`}
                                 className="w-full h-full object-cover"
                                 onError={(e) => {
                                   e.target.style.display = 'none';
@@ -495,13 +507,13 @@ const AdminCreditHistory = () => {
                                 }}
                               />
                             ) : null}
-                            <div className={`w-full h-full flex items-center justify-center text-white ${transaction.creator_profile_image ? 'hidden' : 'flex'}`}>
+                            <div className={`w-full h-full flex items-center justify-center text-white ${transaction.admin_profile_image ? 'hidden' : 'flex'}`}>
                               <FiUser className="w-4 h-4" />
                             </div>
                           </div>
                           <div>
                             <div className="text-sm font-medium text-gray-700">
-                              {transaction.creator_first_name} {transaction.creator_last_name}
+                              {transaction.admin_first_name} {transaction.admin_last_name}
                             </div>
                             <div className="text-xs text-gray-500">Admin</div>
                           </div>

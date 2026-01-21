@@ -43,7 +43,21 @@ exports.getAllEquipment = async (req, res) => {
         COUNT(CASE WHEN ei.status = 'Maintenance' THEN 1 END) as quantity_maintenance,
         COUNT(CASE WHEN ei.status = 'Maintenance' THEN 1 END) as quantity_repairing,
         COUNT(CASE WHEN ei.status = 'Damaged' THEN 1 END) as quantity_damaged,
-        COUNT(CASE WHEN ei.status = 'Lost' THEN 1 END) as quantity_lost
+        COUNT(CASE WHEN ei.status = 'Lost' THEN 1 END) as quantity_lost,
+        -- คำนวณ status รวมของอุปกรณ์ตามลำดับความสำคัญ
+        CASE
+          WHEN et.usage_type = 'Loan' THEN
+            CASE
+              WHEN COUNT(CASE WHEN ei.status = 'Borrowed' THEN 1 END) > 0 THEN 'Borrowed'
+              WHEN COUNT(CASE WHEN ei.status = 'Reserved' THEN 1 END) > 0 THEN 'Reserved'
+              WHEN COUNT(CASE WHEN ei.status = 'Damaged' THEN 1 END) > 0 THEN 'Damaged'
+              WHEN COUNT(CASE WHEN ei.status = 'Lost' THEN 1 END) > 0 THEN 'Lost'
+              WHEN COUNT(CASE WHEN ei.status = 'Maintenance' THEN 1 END) > 0 THEN 'Maintenance'
+              WHEN COUNT(CASE WHEN ei.status = 'Available' THEN 1 END) > 0 THEN 'Available'
+              ELSE 'Available'
+            END
+          ELSE 'Available'
+        END as status
       FROM equipments e
       LEFT JOIN equipmenttypes et ON e.type_id = et.type_id
       LEFT JOIN equipment_items ei ON e.equipment_id = ei.equipment_id
@@ -53,6 +67,17 @@ exports.getAllEquipment = async (req, res) => {
     `;
     
     const [rows] = await pool.query(query);
+    
+    // Debug: Log status calculation
+    console.log('📊 Equipment with calculated status:', rows.map(r => ({
+      id: r.equipment_id,
+      name: r.equipment_name,
+      status: r.status,
+      borrowed: r.quantity_borrowed,
+      available: r.quantity_available,
+      damaged: r.quantity_damaged,
+      lost: r.quantity_lost
+    })));
     
     return res.status(200).json({
       success: true,
@@ -765,10 +790,26 @@ exports.exportInventoryExcel = async (req, res) => {
               AND dt.status = 'Disbursed'
             ), 0)
           )
-        END as available_quantity,
-        COUNT(CASE WHEN ei.status = 'Borrowed' THEN 1 END) as borrowed_quantity,
-        COUNT(CASE WHEN ei.status = 'Maintenance' THEN 1 END) as maintenance_quantity,
-        COUNT(CASE WHEN ei.status = 'Damaged' THEN 1 END) as damaged_quantity
+        END as quantity_available,
+        COUNT(CASE WHEN ei.status = 'Borrowed' THEN 1 END) as quantity_borrowed,
+        COUNT(CASE WHEN ei.status = 'Maintenance' THEN 1 END) as quantity_maintenance,
+        COUNT(CASE WHEN ei.status = 'Maintenance' THEN 1 END) as quantity_repairing,
+        COUNT(CASE WHEN ei.status = 'Damaged' THEN 1 END) as quantity_damaged,
+        COUNT(CASE WHEN ei.status = 'Lost' THEN 1 END) as quantity_lost,
+        -- คำนวณ status รวมของอุปกรณ์ตามลำดับความสำคัญ
+        CASE
+          WHEN et.usage_type = 'Loan' THEN
+            CASE
+              WHEN COUNT(CASE WHEN ei.status = 'Borrowed' THEN 1 END) > 0 THEN 'Borrowed'
+              WHEN COUNT(CASE WHEN ei.status = 'Reserved' THEN 1 END) > 0 THEN 'Reserved'
+              WHEN COUNT(CASE WHEN ei.status = 'Damaged' THEN 1 END) > 0 THEN 'Damaged'
+              WHEN COUNT(CASE WHEN ei.status = 'Lost' THEN 1 END) > 0 THEN 'Lost'
+              WHEN COUNT(CASE WHEN ei.status = 'Maintenance' THEN 1 END) > 0 THEN 'Maintenance'
+              WHEN COUNT(CASE WHEN ei.status = 'Available' THEN 1 END) > 0 THEN 'Available'
+              ELSE 'Available'
+            END
+          ELSE 'Available'
+        END as status
       FROM equipments e
       LEFT JOIN equipmenttypes et ON e.type_id = et.type_id
       LEFT JOIN equipment_items ei ON e.equipment_id = ei.equipment_id
@@ -781,7 +822,7 @@ exports.exportInventoryExcel = async (req, res) => {
     const [equipment] = await pool.query(query);
 
     // สร้างไฟล์ Excel
-    const excelBuffer = generateInventoryExcel(equipment);
+    const excelBuffer = await generateInventoryExcel(equipment);
 
     // ตั้งชื่อไฟล์ตามวันที่
     const filename = `inventory_${new Date().toISOString().split('T')[0]}.xlsx`;

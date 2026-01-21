@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {
   FiPackage, FiCalendar, FiUser, FiCheckCircle, FiXCircle, FiClock,
-  FiFilter, FiSearch, FiRefreshCw, FiDownload, FiEye, FiAlertTriangle,
+  FiFilter, FiSearch, FiRefreshCw, FiEye, FiAlertTriangle,
   FiTrendingUp, FiTrendingDown, FiActivity, FiDollarSign
 } from 'react-icons/fi';
 import { toast } from 'react-toastify';
@@ -298,7 +298,7 @@ const EquipmentReturn = () => {
   };
 
   return (
-    <div className="bg-gray-50 min-h-screen p-6">
+    <div className="bg-gray-50 min-h-screen p-2 sm:p-4 md:p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
@@ -342,10 +342,6 @@ const EquipmentReturn = () => {
                   className="bg-white/20 hover:bg-white/30 p-3 rounded-xl transition-all duration-300 backdrop-blur-sm border border-white/30"
                 >
                   <FiRefreshCw className="w-5 h-5 text-white" />
-                </button>
-                <button className="bg-white/20 hover:bg-white/30 px-4 py-3 rounded-xl transition-all duration-300 backdrop-blur-sm border border-white/30 flex items-center space-x-2">
-                  <FiDownload className="w-4 h-4 text-white" />
-                  <span className="text-white">ส่งออก</span>
                 </button>
               </div>
             </div>

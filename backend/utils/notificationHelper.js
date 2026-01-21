@@ -42,6 +42,23 @@ const notifyNewBorrowRequest = async (borrowingData) => {
  */
 const notifyBorrowApproved = async (borrowingData) => {
   try {
+    const { pool } = require('../config/db');
+    
+    // ตรวจสอบว่ามีการแจ้งเตือนสำหรับ transaction นี้แล้วหรือไม่ (ใน 5 นาทีที่ผ่านมา)
+    const [existingNotifications] = await pool.query(`
+      SELECT notification_id 
+      FROM notifications 
+      WHERE member_id = ? 
+        AND reference_id = ? 
+        AND type = 'borrow_approved'
+        AND created_at >= DATE_SUB(NOW(), INTERVAL 5 MINUTE)
+    `, [borrowingData.user_id, borrowingData.transaction_id]);
+
+    if (existingNotifications.length > 0) {
+      console.log('⚠️ Duplicate borrow approved notification detected, skipping:', borrowingData.transaction_id);
+      return;
+    }
+    
     const result = await createNotification(borrowingData.user_id, {
       type: 'borrow_approved',
       title: 'อนุมัติคำขอยืม',
@@ -99,10 +116,12 @@ const notifyBorrowRejected = async (borrowingData) => {
 
 /**
  * สร้างการแจ้งเตือนเมื่อใกล้ครบกำหนดคืน (User)
+ * แจ้งเตือนทั้งในระบบและส่งอีเมล
  */
 const notifyReturnDueSoon = async (borrowingData) => {
   try {
     const { pool } = require('../config/db');
+    const { sendReturnReminderEmail } = require('./emailService');
     
     const [existingNotifications] = await pool.query(`
       SELECT notification_id 
@@ -117,6 +136,20 @@ const notifyReturnDueSoon = async (borrowingData) => {
       return;
     }
 
+    // ดึงข้อมูลสมาชิก (อีเมล + ชื่อ)
+    const [members] = await pool.query(`
+      SELECT email, first_name, last_name 
+      FROM members 
+      WHERE member_id = ?
+    `, [borrowingData.user_id]);
+
+    const member = members[0];
+    if (!member) {
+      console.error(`❌ Member not found: ${borrowingData.user_id}`);
+      return;
+    }
+
+    // สร้างการแจ้งเตือนในระบบ
     const result = await createNotification(borrowingData.user_id, {
       type: 'return_reminder',
       title: 'ใกล้ครบกำหนดคืน',
@@ -127,6 +160,7 @@ const notifyReturnDueSoon = async (borrowingData) => {
     });
     
     if (result.success) {
+      // ส่ง WebSocket notification
       sendNotificationToUser(borrowingData.user_id, {
         notification_id: result.notification_id,
         type: 'return_reminder',
@@ -136,6 +170,15 @@ const notifyReturnDueSoon = async (borrowingData) => {
         is_read: false,
         created_at: new Date()
       });
+
+      // ส่งอีเมล (ไม่รอผลลัพธ์)
+      sendReturnReminderEmail(member.email, {
+        userName: `${member.first_name} ${member.last_name}`,
+        equipmentName: borrowingData.equipment_name,
+        daysRemaining: borrowingData.days_remaining,
+        returnDate: borrowingData.expected_return_date,
+        transactionId: borrowingData.transaction_id
+      }).catch(err => console.error('❌ Email sending error:', err));
     }
   } catch (error) {
     console.error('❌ Error notifying return due soon:', error);
@@ -144,10 +187,12 @@ const notifyReturnDueSoon = async (borrowingData) => {
 
 /**
  * สร้างการแจ้งเตือนเมื่อเกินกำหนดคืน (User)
+ * แจ้งเตือนทั้งในระบบและส่งอีเมล
  */
 const notifyOverdue = async (borrowingData) => {
   try {
     const { pool } = require('../config/db');
+    const { sendOverdueEmail } = require('./emailService');
     
     const [existingNotifications] = await pool.query(`
       SELECT notification_id 
@@ -162,6 +207,20 @@ const notifyOverdue = async (borrowingData) => {
       return;
     }
 
+    // ดึงข้อมูลสมาชิก (อีเมล + ชื่อ)
+    const [members] = await pool.query(`
+      SELECT email, first_name, last_name 
+      FROM members 
+      WHERE member_id = ?
+    `, [borrowingData.user_id]);
+
+    const member = members[0];
+    if (!member) {
+      console.error(`❌ Member not found: ${borrowingData.user_id}`);
+      return;
+    }
+
+    // สร้างการแจ้งเตือนในระบบ
     const result = await createNotification(borrowingData.user_id, {
       type: 'overdue',
       title: 'เกินกำหนดคืน',
@@ -172,6 +231,7 @@ const notifyOverdue = async (borrowingData) => {
     });
     
     if (result.success) {
+      // ส่ง WebSocket notification
       sendNotificationToUser(borrowingData.user_id, {
         notification_id: result.notification_id,
         type: 'overdue',
@@ -181,6 +241,15 @@ const notifyOverdue = async (borrowingData) => {
         is_read: false,
         created_at: new Date()
       });
+
+      // ส่งอีเมล (ไม่รอผลลัพธ์)
+      sendOverdueEmail(member.email, {
+        userName: `${member.first_name} ${member.last_name}`,
+        equipmentName: borrowingData.equipment_name,
+        daysOverdue: borrowingData.days_overdue,
+        returnDate: borrowingData.expected_return_date,
+        transactionId: borrowingData.transaction_id
+      }).catch(err => console.error('❌ Email sending error:', err));
     }
   } catch (error) {
     console.error('❌ Error notifying overdue:', error);
@@ -223,39 +292,36 @@ const notifyEquipmentReturned = async (returnData) => {
 
 /**
  * สร้างการแจ้งเตือนเมื่อเครดิตเปลี่ยนแปลง (User)
- * ทำงานแบบ non-blocking เพื่อไม่ให้ช้า
+ * รอให้การแจ้งเตือนถูกสร้างเสร็จก่อนเพื่อให้ตรงกับฐานข้อมูล
  */
 const notifyCreditChange = async (userId, creditData) => {
-  // ทำงานแบบ async โดยไม่รอผลลัพธ์
-  setImmediate(async () => {
-    try {
-      const { amount, description, balance_after } = creditData;
-      const isPositive = amount > 0;
-      const amountText = isPositive ? `+${amount}` : amount;
-      
-      const result = await createNotification(userId, {
+  try {
+    const { amount, description, balance_after } = creditData;
+    const isPositive = amount > 0;
+    const amountText = isPositive ? `+${amount}` : amount;
+    
+    const result = await createNotification(userId, {
+      type: 'credit',
+      title: isPositive ? 'ได้รับเครดิต' : 'หักเครดิต',
+      message: `${description} ${amountText} เครดิต (คงเหลือ ${balance_after} เครดิต)`,
+      priority: 'medium',
+      reference_type: 'credit'
+    });
+    
+    if (result.success) {
+      sendNotificationToUser(userId, {
+        notification_id: result.notification_id,
         type: 'credit',
         title: isPositive ? 'ได้รับเครดิต' : 'หักเครดิต',
         message: `${description} ${amountText} เครดิต (คงเหลือ ${balance_after} เครดิต)`,
         priority: 'medium',
-        reference_type: 'credit'
+        is_read: false,
+        created_at: new Date()
       });
-      
-      if (result.success) {
-        sendNotificationToUser(userId, {
-          notification_id: result.notification_id,
-          type: 'credit',
-          title: isPositive ? 'ได้รับเครดิต' : 'หักเครดิต',
-          message: `${description} ${amountText} เครดิต (คงเหลือ ${balance_after} เครดิต)`,
-          priority: 'medium',
-          is_read: false,
-          created_at: new Date()
-        });
-      }
-    } catch (error) {
-      console.error('❌ Error notifying credit change:', error);
     }
-  });
+  } catch (error) {
+    console.error('❌ Error notifying credit change:', error);
+  }
 };
 
 /**

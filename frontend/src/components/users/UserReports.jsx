@@ -131,7 +131,7 @@ const UserReports = () => {
   };
 
   return (
-    <div className="bg-gray-50 min-h-screen p-6">
+    <div className="bg-gray-50 min-h-screen p-2 sm:p-4 md:p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
@@ -356,52 +356,66 @@ const UserReports = () => {
                     {/* Equipment Categories Pie Chart */}
                     <div className="flex flex-col items-center">
                       <h3 className="text-lg font-semibold text-gray-800 mb-4">หมวดหมู่ที่ยืมบ่อย</h3>
-                      <div className="w-full max-w-lg">
-                        <ResponsiveContainer width="100%" height={320}>
-                          <PieChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
-                            <Pie
-                              data={reportData.equipment_categories || []}
-                              cx="50%"
-                              cy="50%"
-                              labelLine={false}
-                              label={false}
-                              outerRadius="65%"
-                              innerRadius="45%"
-                              fill="#8884d8"
-                              dataKey="value"
-                            >
-                              {(reportData.equipment_categories || []).map((entry, index) => (
-                                <Cell key={`cell-${index}`} fill={entry.color} />
-                              ))}
-                            </Pie>
-                            <Tooltip content={({ active, payload }) => {
-                              if (active && payload && payload.length) {
-                                return (
-                                  <div className="bg-white p-3 shadow-lg rounded-lg border border-gray-200 max-w-xs">
-                                    <p className="font-semibold text-gray-800">{payload[0].payload.name}</p>
-                                    <p className="text-sm text-gray-600">ยืม: {payload[0].value} ครั้ง ({(payload[0].payload.percent * 100).toFixed(1)}%)</p>
-                                    {payload[0].payload.equipments && (
-                                      <p className="text-xs text-gray-500 mt-1">
-                                        อุปกรณ์: {payload[0].payload.equipments}
-                                      </p>
-                                    )}
-                                  </div>
-                                );
-                              }
-                              return null;
-                            }} />
-                            <Legend 
-                              verticalAlign="bottom" 
-                              height={60}
-                              wrapperStyle={{ paddingTop: '10px' }}
-                              formatter={(value, entry) => {
-                                const percent = entry.payload.percent ? (entry.payload.percent * 100).toFixed(0) : 0;
-                                return <span className="text-sm">{entry.payload.name} ({percent}%)</span>;
-                              }}
-                            />
-                          </PieChart>
-                        </ResponsiveContainer>
-                      </div>
+                      {!reportData.equipment_categories || reportData.equipment_categories.length === 0 ? (
+                        <div className="w-full max-w-lg h-80 flex items-center justify-center text-gray-400">
+                          <div className="text-center">
+                            <FiPieChart className="w-16 h-16 mx-auto mb-3 opacity-50" />
+                            <p>ไม่มีข้อมูลหมวดหมู่</p>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="w-full max-w-lg">
+                          <ResponsiveContainer width="100%" height={320}>
+                            <PieChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+                              <Pie
+                                data={reportData.equipment_categories}
+                                cx="50%"
+                                cy="50%"
+                                labelLine={false}
+                                label={false}
+                                outerRadius="65%"
+                                innerRadius="45%"
+                                fill="#8884d8"
+                                dataKey="value"
+                              >
+                                {reportData.equipment_categories.map((entry, index) => (
+                                  <Cell key={`cell-${index}`} fill={entry.color} />
+                                ))}
+                              </Pie>
+                              <Tooltip content={({ active, payload }) => {
+                                if (active && payload && payload.length) {
+                                  const percent = payload[0].payload.percent 
+                                    ? (payload[0].payload.percent * 100).toFixed(1) 
+                                    : '0.0';
+                                  return (
+                                    <div className="bg-white p-3 shadow-lg rounded-lg border border-gray-200 max-w-xs">
+                                      <p className="font-semibold text-gray-800">{payload[0].payload.name}</p>
+                                      <p className="text-sm text-gray-600">ยืม: {payload[0].value} ครั้ง ({percent}%)</p>
+                                      {payload[0].payload.equipments && (
+                                        <p className="text-xs text-gray-500 mt-1">
+                                          อุปกรณ์: {payload[0].payload.equipments}
+                                        </p>
+                                      )}
+                                    </div>
+                                  );
+                                }
+                                return null;
+                              }} />
+                              <Legend 
+                                verticalAlign="bottom" 
+                                height={60}
+                                wrapperStyle={{ paddingTop: '10px' }}
+                                formatter={(value, entry) => {
+                                  const percent = entry.payload.percent 
+                                    ? (entry.payload.percent * 100).toFixed(0) 
+                                    : '0';
+                                  return <span className="text-sm">{entry.payload.name} ({percent}%)</span>;
+                                }}
+                              />
+                            </PieChart>
+                          </ResponsiveContainer>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>

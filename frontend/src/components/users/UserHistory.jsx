@@ -257,7 +257,9 @@ const UserHistory = () => {
                 <div className="text-sm text-indigo-100">รายการทั้งหมด</div>
               </div>
               <div className="bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/20">
-                <div className="text-2xl font-bold">{user?.credit || 0}</div>
+                <div className={`text-2xl font-bold ${
+                  (user?.credit || 0) < 0 ? 'text-red-300' : 'text-white'
+                }`}>{user?.credit || 0}</div>
                 <div className="text-sm text-indigo-100">เครดิตคงเหลือ</div>
               </div>
             </div>
@@ -738,7 +740,7 @@ const UserHistory = () => {
 
         {/* Summary Cards */}
         {history.length > 0 && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
             <div className="bg-gradient-to-br from-blue-500 to-cyan-500 rounded-2xl shadow-xl p-6 text-white transform hover:scale-105 transition-all duration-300">
               <div className="flex items-center justify-between mb-2">
                 <FiBox className="w-8 h-8 opacity-80" />

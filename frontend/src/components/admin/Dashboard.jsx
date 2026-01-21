@@ -14,25 +14,25 @@ import Loading from '../common/Loading';
 
 const StatCard = ({ title, value, icon: Icon, gradient, trend, trendValue, subtitle, delay = 0 }) => (
   <div
-    className={`relative overflow-hidden rounded-3xl p-6 text-white shadow-2xl hover:shadow-3xl hover:scale-105 transition-all duration-500 transform hover:-translate-y-2 ${gradient} animate-fadeInUp`}
+    className={`relative overflow-hidden rounded-xl sm:rounded-2xl md:rounded-3xl p-3 sm:p-4 md:p-6 text-white shadow-lg sm:shadow-xl md:shadow-2xl hover:shadow-2xl sm:hover:shadow-3xl hover:scale-105 transition-all duration-500 transform hover:-translate-y-2 ${gradient} animate-fadeInUp`}
     style={{ animationDelay: `${delay}ms` }}
   >
     <div className="relative z-10">
-      <div className="flex items-center justify-between mb-4">
-        <div className="p-3 bg-white/20 backdrop-blur-sm rounded-2xl hover:bg-white/30 transition-all duration-300 group">
-          <Icon className="h-8 w-8 group-hover:scale-110 transition-transform duration-300" />
+      <div className="flex items-center justify-between mb-2 sm:mb-3 md:mb-4">
+        <div className="p-2 sm:p-2.5 md:p-3 bg-white/20 backdrop-blur-sm rounded-lg sm:rounded-xl md:rounded-2xl hover:bg-white/30 transition-all duration-300 group">
+          <Icon className="h-5 w-5 sm:h-6 sm:w-6 md:h-8 md:w-8 group-hover:scale-110 transition-transform duration-300" />
         </div>
         {trend && (
-          <div className={`flex items-center space-x-1 px-4 py-2 rounded-full text-xs font-bold shadow-lg animate-pulse ${trend === 'up' ? 'bg-green-400/40 backdrop-blur-sm' : 'bg-red-400/40 backdrop-blur-sm'
+          <div className={`flex items-center space-x-1 px-2 py-1 sm:px-3 sm:py-1.5 md:px-4 md:py-2 rounded-full text-xs font-bold shadow-lg animate-pulse ${trend === 'up' ? 'bg-green-400/40 backdrop-blur-sm' : 'bg-red-400/40 backdrop-blur-sm'
             }`}>
-            {trend === 'up' ? <FiArrowUp className="w-4 h-4 animate-bounce" /> : <FiArrowDown className="w-4 h-4 animate-bounce" />}
-            <span>{trendValue}</span>
+            {trend === 'up' ? <FiArrowUp className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 animate-bounce" /> : <FiArrowDown className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 animate-bounce" />}
+            <span className="hidden sm:inline">{trendValue}</span>
           </div>
         )}
       </div>
-      <p className="text-sm font-semibold text-white/90 mb-2 tracking-wide uppercase">{title}</p>
-      <p className="text-4xl font-black mb-3 tracking-tight">{value}</p>
-      {subtitle && <p className="text-sm text-white/80 font-medium">{subtitle}</p>}
+      <p className="text-xs sm:text-sm font-semibold text-white/90 mb-1 sm:mb-2 tracking-wide uppercase">{title}</p>
+      <p className="text-2xl sm:text-3xl md:text-4xl font-black mb-2 sm:mb-3 tracking-tight">{value}</p>
+      {subtitle && <p className="text-xs sm:text-sm text-white/80 font-medium">{subtitle}</p>}
     </div>
     <div className="absolute top-0 right-0 -mt-6 -mr-6 h-40 w-40 rounded-full bg-white/10 blur-3xl animate-pulse"></div>
     <div className="absolute bottom-0 left-0 -mb-6 -ml-6 h-32 w-32 rounded-full bg-white/10 blur-2xl"></div>
@@ -74,18 +74,18 @@ const RecentActivity = ({ activities }) => (
     {activities.slice(0, 4).map((activity, index) => (
       <div
         key={index}
-        className="flex items-center justify-between p-3 bg-gray-50 rounded-xl border border-gray-100 hover:border-indigo-200 hover:bg-indigo-50/50 transition-all duration-200 cursor-pointer group"
+        className="flex items-center justify-between p-2 sm:p-3 bg-gray-50 rounded-lg sm:rounded-xl border border-gray-100 hover:border-indigo-200 hover:bg-indigo-50/50 transition-all duration-200 cursor-pointer group"
       >
         <div className="flex items-center flex-1 min-w-0">
-          <div className={`p-2 rounded-lg ${activity.color} mr-3 flex-shrink-0`}>
-            <activity.icon className="h-4 w-4 text-white" />
+          <div className={`p-1.5 sm:p-2 rounded-lg ${activity.color} mr-2 sm:mr-3 flex-shrink-0`}>
+            <activity.icon className="h-3 w-3 sm:h-4 sm:w-4 text-white" />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-semibold text-gray-800 truncate">{activity.user}</p>
+            <p className="text-xs sm:text-sm font-semibold text-gray-800 truncate">{activity.user}</p>
             <p className="text-xs text-gray-500 truncate">{activity.action}</p>
           </div>
         </div>
-        <div className="flex items-center gap-2 flex-shrink-0 ml-3">
+        <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0 ml-2 sm:ml-3">
           <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${activity.statusColor}`}>
             {activity.status}
           </span>
@@ -334,7 +334,7 @@ const Dashboard = () => {
   const recentActivities = getFormattedActivities();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 p-6 animate-fadeIn">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 p-2 sm:p-4 md:p-6 animate-fadeIn">
       <style>{`
         @keyframes fadeIn {
           from { opacity: 0; }
@@ -390,15 +390,15 @@ const Dashboard = () => {
         }
       `}</style>
 
-      <div className="max-w-7xl mx-auto space-y-8">
+      <div className="max-w-7xl mx-auto space-y-4 sm:space-y-6 md:space-y-8">
         {/* Enhanced Header */}
-        <div className="header-decoration relative overflow-hidden bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 rounded-3xl shadow-2xl p-8 text-white">
-          <div className="relative z-10 flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
+        <div className="header-decoration relative overflow-hidden bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 rounded-2xl sm:rounded-3xl shadow-xl sm:shadow-2xl p-4 sm:p-6 md:p-8 text-white">
+          <div className="relative z-10 flex flex-col lg:flex-row lg:items-start lg:items-center lg:justify-between gap-4 sm:gap-6">
             <div className="flex-1">
-              <h1 className="text-5xl font-black mb-3 tracking-tight">
+              <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black mb-2 sm:mb-3 tracking-tight">
                 แดชบอร์ดผู้ดูแลระบบ ✨
               </h1>
-              <p className="text-indigo-100 text-lg font-medium flex items-center">
+              <p className="text-indigo-100 text-sm sm:text-base lg:text-lg font-medium flex flex-wrap items-center gap-2">
                 <FiCalendar className="mr-2" />
                 {currentTime.toLocaleDateString('th-TH', {
                   weekday: 'long',
@@ -410,24 +410,24 @@ const Dashboard = () => {
                 <FiClock className="mr-2" />
                 {currentTime.toLocaleTimeString('th-TH')}
               </p>
-              <p className="text-indigo-200 text-sm font-medium mt-2 flex items-center">
-                <FiRefreshCw className="mr-2 w-4 h-4" />
+              <p className="text-indigo-200 text-xs sm:text-sm font-medium mt-1 sm:mt-2 flex items-center">
+                <FiRefreshCw className="mr-1 sm:mr-2 w-3 h-3 sm:w-4 sm:h-4" />
                 {getLastUpdatedText()}
               </p>
             </div>
             <button
               onClick={handleRefresh}
               disabled={loading}
-              className="px-6 py-3 bg-white/20 backdrop-blur-md text-white rounded-2xl hover:bg-white/30 flex items-center shadow-xl hover:shadow-2xl transition-all duration-300 group border border-white/30 disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0"
+              className="px-4 py-2 sm:px-6 sm:py-3 bg-white/20 backdrop-blur-md text-white rounded-xl sm:rounded-2xl hover:bg-white/30 flex items-center shadow-lg sm:shadow-xl hover:shadow-xl sm:hover:shadow-2xl transition-all duration-300 group border border-white/30 disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0"
             >
-              <FiRefreshCw className={`mr-2 h-5 w-5 transition-transform duration-500 ${loading ? 'animate-spin' : 'group-hover:rotate-180'}`} />
-              <span className="font-bold whitespace-nowrap">{loading ? 'กำลังโหลด...' : 'รีเฟรช'}</span>
+              <FiRefreshCw className={`mr-1 sm:mr-2 h-4 w-4 sm:h-5 sm:w-5 transition-transform duration-500 ${loading ? 'animate-spin' : 'group-hover:rotate-180'}`} />
+              <span className="text-sm sm:text-base font-bold whitespace-nowrap">{loading ? 'กำลังโหลด...' : 'รีเฟรช'}</span>
             </button>
           </div>
         </div>
 
         {/* สถิติภาพรวม */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
           <StatCard
             title="ผู้ใช้งาน"
             value={stats.users.total_users || 0}
@@ -463,7 +463,7 @@ const Dashboard = () => {
         </div>
 
         {/* สถิติการใช้งาน */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
           <StatCard
             title="ถูกยืม"
             value={stats.equipment.borrowed_quantity || 0}
@@ -499,44 +499,44 @@ const Dashboard = () => {
         </div>
 
         {/* Activity Chart Full Width */}
-        <div className="bg-white rounded-3xl shadow-2xl p-8 border border-gray-100 hover:shadow-3xl transition-shadow duration-300">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4">
-            <h3 className="text-2xl font-black text-gray-800 flex items-center">
-              <div className="p-2 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl mr-3">
-                <FiBarChart className="text-white w-6 h-6" />
+        <div className="bg-white rounded-xl sm:rounded-2xl md:rounded-3xl shadow-lg sm:shadow-xl md:shadow-2xl p-3 sm:p-4 md:p-6 lg:p-8 border border-gray-100 hover:shadow-xl sm:hover:shadow-2xl md:hover:shadow-3xl transition-shadow duration-300">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-3 sm:mb-4 md:mb-6 gap-2 sm:gap-3 md:gap-4">
+            <h3 className="text-base sm:text-lg md:text-xl lg:text-2xl font-black text-gray-800 flex items-center">
+              <div className="p-1.5 sm:p-2 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg sm:rounded-xl mr-2 sm:mr-3">
+                <FiBarChart className="text-white w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" />
               </div>
               กิจกรรมรายสัปดาห์
             </h3>
-            <div className="flex gap-4">
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-indigo-500 rounded-full"></div>
-                <span className="text-sm text-gray-600 font-medium">จำนวนรายการ</span>
+            <div className="flex gap-2 sm:gap-4">
+              <div className="flex items-center gap-1 sm:gap-2">
+                <div className="w-2 h-2 sm:w-3 sm:h-3 bg-indigo-500 rounded-full"></div>
+                <span className="text-xs sm:text-sm text-gray-600 font-medium">จำนวนรายการ</span>
               </div>
             </div>
           </div>
           <ActivityChart data={weeklyData} />
-          <div className="mt-6 pt-6 border-t border-gray-200 grid grid-cols-2 md:grid-cols-3 gap-4">
-            <div className="bg-gradient-to-br from-indigo-50 to-purple-50 p-4 rounded-2xl">
-              <p className="text-sm text-gray-600 font-semibold">รวมทั้งหมด</p>
-              <p className="text-2xl font-black text-indigo-600">
+          <div className="mt-3 sm:mt-4 md:mt-6 pt-3 sm:pt-4 md:pt-6 border-t border-gray-200 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 sm:gap-3 md:gap-4">
+            <div className="bg-gradient-to-br from-indigo-50 to-purple-50 p-3 sm:p-4 rounded-xl sm:rounded-2xl">
+              <p className="text-xs sm:text-sm text-gray-600 font-semibold">รวมทั้งหมด</p>
+              <p className="text-xl sm:text-2xl font-black text-indigo-600">
                 {weeklyData.length > 0
                   ? weeklyData.reduce((sum, d) => sum + d.value, 0)
                   : '0'}
               </p>
               <p className="text-xs text-gray-500 mt-1">7 วันที่ผ่านมา</p>
             </div>
-            <div className="bg-gradient-to-br from-green-50 to-teal-50 p-4 rounded-2xl">
-              <p className="text-sm text-gray-600 font-semibold">เฉลี่ยต่อวัน</p>
-              <p className="text-2xl font-black text-green-600">
+            <div className="bg-gradient-to-br from-green-50 to-teal-50 p-3 sm:p-4 rounded-xl sm:rounded-2xl">
+              <p className="text-xs sm:text-sm text-gray-600 font-semibold">เฉลี่ยต่อวัน</p>
+              <p className="text-xl sm:text-2xl font-black text-green-600">
                 {weeklyData.length > 0
                   ? (weeklyData.reduce((sum, d) => sum + d.value, 0) / weeklyData.length).toFixed(1)
                   : '0'}
               </p>
               <p className="text-xs text-gray-500 mt-1">รายการ/วัน</p>
             </div>
-            <div className="bg-gradient-to-br from-orange-50 to-orange-50 p-4 rounded-2xl">
-              <p className="text-sm text-gray-600 font-semibold">สูงสุด</p>
-              <p className="text-2xl font-black text-orange-600">
+            <div className="bg-gradient-to-br from-orange-50 to-orange-50 p-3 sm:p-4 rounded-xl sm:rounded-2xl">
+              <p className="text-xs sm:text-sm text-gray-600 font-semibold">สูงสุด</p>
+              <p className="text-xl sm:text-2xl font-black text-orange-600">
                 {weeklyData.length > 0
                   ? Math.max(...weeklyData.map(d => d.value))
                   : '0'}
@@ -547,20 +547,21 @@ const Dashboard = () => {
         </div>
 
         {/* Recent Activities */}
-        <div className="bg-white rounded-3xl shadow-2xl p-8 border border-gray-100 hover:shadow-3xl transition-shadow duration-300">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-3">
-            <h3 className="text-2xl font-black text-gray-800 flex items-center">
-              <div className="p-2 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl mr-3">
-                <FiActivity className="text-white w-6 h-6" />
+        <div className="bg-white rounded-xl sm:rounded-2xl md:rounded-3xl shadow-lg sm:shadow-xl md:shadow-2xl p-3 sm:p-4 md:p-6 lg:p-8 border border-gray-100 hover:shadow-xl sm:hover:shadow-2xl md:hover:shadow-3xl transition-shadow duration-300">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-3 sm:mb-4 md:mb-6 gap-2 sm:gap-3">
+            <h3 className="text-base sm:text-lg md:text-xl lg:text-2xl font-black text-gray-800 flex items-center">
+              <div className="p-1.5 sm:p-2 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg sm:rounded-xl mr-2 sm:mr-3">
+                <FiActivity className="text-white w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" />
               </div>
               กิจกรรมล่าสุด
             </h3>
             <button
               onClick={() => navigate('/admin/borrowing')}
-              className="flex items-center text-indigo-600 hover:text-indigo-700 font-semibold group px-4 py-2 bg-indigo-50 hover:bg-indigo-100 rounded-xl transition-all"
+              className="flex items-center text-indigo-600 hover:text-indigo-700 font-semibold group px-3 py-1.5 sm:px-4 sm:py-2 bg-indigo-50 hover:bg-indigo-100 rounded-lg sm:rounded-xl transition-all text-sm sm:text-base"
             >
-              <FiEye className="mr-2 w-5 h-5 group-hover:scale-110 transition-transform" />
-              ดูทั้งหมด
+              <FiEye className="mr-1 sm:mr-2 w-4 h-4 sm:w-5 sm:h-5 group-hover:scale-110 transition-transform" />
+              <span className="hidden sm:inline">ดูทั้งหมด</span>
+              <span className="sm:hidden">ดูทั้งหมด</span>
             </button>
           </div>
           {recentActivities.length > 0 ? (
@@ -577,16 +578,16 @@ const Dashboard = () => {
         </div>
 
         {/* Quick Actions */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
           <button
             onClick={() => navigate('/admin/borrowing')}
-            className="relative overflow-hidden bg-gradient-to-br from-purple-500 to-purple-700 text-white rounded-2xl shadow-xl p-5 hover:shadow-2xl transition-all duration-300 transform hover:scale-105 group"
+            className="relative overflow-hidden bg-gradient-to-br from-purple-500 to-purple-700 text-white rounded-xl sm:rounded-2xl shadow-lg sm:shadow-xl p-3 sm:p-4 md:p-5 hover:shadow-xl sm:hover:shadow-2xl transition-all duration-300 transform hover:scale-105 group"
           >
             <div className="relative z-10">
-              <div className="p-3 bg-white/20 backdrop-blur-sm rounded-xl inline-flex mb-3 group-hover:bg-white/30 transition-all">
-                <FiBox className="h-6 w-6" />
+              <div className="p-2 sm:p-2.5 md:p-3 bg-white/20 backdrop-blur-sm rounded-lg sm:rounded-xl inline-flex mb-2 sm:mb-3 group-hover:bg-white/30 transition-all">
+                <FiBox className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6" />
               </div>
-              <div className="text-lg font-black mb-1">การยืม-คืน</div>
+              <div className="text-sm sm:text-base md:text-lg font-black mb-1">การยืม-คืน</div>
               <div className="text-xs text-purple-100 font-medium">จัดการรายการยืมคืน</div>
             </div>
             <div className="absolute top-0 right-0 -mt-6 -mr-6 h-24 w-24 rounded-full bg-white/10 blur-xl"></div>
@@ -594,13 +595,13 @@ const Dashboard = () => {
 
           <button
             onClick={() => navigate('/admin/disbursement')}
-            className="relative overflow-hidden bg-gradient-to-br from-green-500 to-green-700 text-white rounded-2xl shadow-xl p-5 hover:shadow-2xl transition-all duration-300 transform hover:scale-105 group"
+            className="relative overflow-hidden bg-gradient-to-br from-green-500 to-green-700 text-white rounded-xl sm:rounded-2xl shadow-lg sm:shadow-xl p-3 sm:p-4 md:p-5 hover:shadow-xl sm:hover:shadow-2xl transition-all duration-300 transform hover:scale-105 group"
           >
             <div className="relative z-10">
-              <div className="p-3 bg-white/20 backdrop-blur-sm rounded-xl inline-flex mb-3 group-hover:bg-white/30 transition-all">
-                <FiShoppingBag className="h-6 w-6" />
+              <div className="p-2 sm:p-2.5 md:p-3 bg-white/20 backdrop-blur-sm rounded-lg sm:rounded-xl inline-flex mb-2 sm:mb-3 group-hover:bg-white/30 transition-all">
+                <FiShoppingBag className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6" />
               </div>
-              <div className="text-lg font-black mb-1">การเบิก</div>
+              <div className="text-sm sm:text-base md:text-lg font-black mb-1">การเบิก</div>
               <div className="text-xs text-green-100 font-medium">อนุมัติการเบิก</div>
             </div>
             <div className="absolute top-0 right-0 -mt-6 -mr-6 h-24 w-24 rounded-full bg-white/10 blur-xl"></div>
@@ -608,13 +609,13 @@ const Dashboard = () => {
 
           <button
             onClick={() => navigate('/admin/inventory')}
-            className="relative overflow-hidden bg-gradient-to-br from-blue-500 to-blue-700 text-white rounded-2xl shadow-xl p-5 hover:shadow-2xl transition-all duration-300 transform hover:scale-105 group"
+            className="relative overflow-hidden bg-gradient-to-br from-blue-500 to-blue-700 text-white rounded-xl sm:rounded-2xl shadow-lg sm:shadow-xl p-3 sm:p-4 md:p-5 hover:shadow-xl sm:hover:shadow-2xl transition-all duration-300 transform hover:scale-105 group"
           >
             <div className="relative z-10">
-              <div className="p-3 bg-white/20 backdrop-blur-sm rounded-xl inline-flex mb-3 group-hover:bg-white/30 transition-all">
-                <FiPackage className="h-6 w-6" />
+              <div className="p-2 sm:p-2.5 md:p-3 bg-white/20 backdrop-blur-sm rounded-lg sm:rounded-xl inline-flex mb-2 sm:mb-3 group-hover:bg-white/30 transition-all">
+                <FiPackage className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6" />
               </div>
-              <div className="text-lg font-black mb-1">คลังอุปกรณ์</div>
+              <div className="text-sm sm:text-base md:text-lg font-black mb-1">คลังอุปกรณ์</div>
               <div className="text-xs text-blue-100 font-medium">จัดการอุปกรณ์</div>
             </div>
             <div className="absolute top-0 right-0 -mt-6 -mr-6 h-24 w-24 rounded-full bg-white/10 blur-xl"></div>
@@ -622,13 +623,13 @@ const Dashboard = () => {
 
           <button
             onClick={() => navigate('/admin/users')}
-            className="relative overflow-hidden bg-gradient-to-br from-orange-500 to-orange-700 text-white rounded-2xl shadow-xl p-5 hover:shadow-2xl transition-all duration-300 transform hover:scale-105 group"
+            className="relative overflow-hidden bg-gradient-to-br from-orange-500 to-orange-700 text-white rounded-xl sm:rounded-2xl shadow-lg sm:shadow-xl p-3 sm:p-4 md:p-5 hover:shadow-xl sm:hover:shadow-2xl transition-all duration-300 transform hover:scale-105 group"
           >
             <div className="relative z-10">
-              <div className="p-3 bg-white/20 backdrop-blur-sm rounded-xl inline-flex mb-3 group-hover:bg-white/30 transition-all">
-                <FiUsers className="h-6 w-6" />
+              <div className="p-2 sm:p-2.5 md:p-3 bg-white/20 backdrop-blur-sm rounded-lg sm:rounded-xl inline-flex mb-2 sm:mb-3 group-hover:bg-white/30 transition-all">
+                <FiUsers className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6" />
               </div>
-              <div className="text-lg font-black mb-1">ผู้ใช้งาน</div>
+              <div className="text-sm sm:text-base md:text-lg font-black mb-1">ผู้ใช้งาน</div>
               <div className="text-xs text-orange-100 font-medium">จัดการผู้ใช้</div>
             </div>
             <div className="absolute top-0 right-0 -mt-6 -mr-6 h-24 w-24 rounded-full bg-white/10 blur-xl"></div>

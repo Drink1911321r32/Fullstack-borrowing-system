@@ -1040,10 +1040,6 @@ const getReportsStats = async (req, res) => {
       LIMIT 10
     `, [equipmentDateFilter, equipmentDateFilter, equipmentDateFilter]);
 
-    console.log('📊 Equipment Usage Query Result:');
-    console.log('Equipment Date Filter:', equipmentDateFilter);
-    console.log('Raw equipment usage data:', JSON.stringify(equipmentUsage, null, 2));
-
     // ดึงอุปกรณ์ยอดนิยม 10 อันดับในแต่ละประเภท
     const equipmentUsageWithTop10 = await Promise.all(equipmentUsage.map(async (typeRow) => {
       const [topEquipments] = await pool.query(`
@@ -1070,8 +1066,6 @@ const getReportsStats = async (req, res) => {
         }))
       };
     }));
-
-    console.log('📦 Equipment Usage With Top 10:', JSON.stringify(equipmentUsageWithTop10, null, 2));
 
     // ========== Disbursement Usage by Type (10 อันดับ) ==========
     const [disbursementUsage] = await pool.query(`

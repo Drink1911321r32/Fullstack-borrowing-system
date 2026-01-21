@@ -85,7 +85,7 @@ const userValidation = {
     body('password').isLength({ min: 6, max: 100 }).withMessage('รหัสผ่านต้องมี 6-100 ตัวอักษร'),
     body('first_name').trim().isLength({ min: 2, max: 50 }).withMessage('ชื่อต้องมี 2-50 ตัวอักษร'),
     body('last_name').trim().isLength({ min: 2, max: 50 }).withMessage('นามสกุลต้องมี 2-50 ตัวอักษร'),
-    body('credit').optional().isInt({ min: 0, max: 10000 }).withMessage('เครดิตต้องอยู่ระหว่าง 0-10000'),
+    body('credit').optional().isInt({ min: -10000, max: 10000 }).withMessage('เครดิตต้องอยู่ระหว่าง -10000 ถึง 10000'),
     validate
   ],
   
@@ -94,7 +94,7 @@ const userValidation = {
     body('email').optional().isEmail().normalizeEmail(),
     body('first_name').optional().trim().isLength({ min: 2, max: 50 }),
     body('last_name').optional().trim().isLength({ min: 2, max: 50 }),
-    body('credit').optional().isInt({ min: 0, max: 10000 }),
+    body('credit').optional().isInt({ min: -10000, max: 10000 }),
     validate
   ],
   

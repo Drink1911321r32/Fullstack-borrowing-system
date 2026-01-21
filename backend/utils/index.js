@@ -15,7 +15,7 @@ const comparePassword = async (password, hashedPassword) => {
 // Generate JWT token
 const generateToken = (payload) => {
   return jwt.sign(payload, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRES_IN || '7d'
+    expiresIn: process.env.JWT_EXPIRES_IN || '24h'
   });
 };
 
@@ -207,6 +207,15 @@ const getPenaltyCreditPerHour = async () => {
 };
 
 /**
+ * Get penalty credit per day from settings
+ * @deprecated Use getPenaltyCreditPerHour instead for more accurate calculations
+ */
+const getPenaltyCreditPerDay = async () => {
+  const hourlyPenalty = await getPenaltyCreditPerHour();
+  return hourlyPenalty * 24; // Convert hourly to daily rate
+};
+
+/**
  * Format date to MySQL DATETIME format
  * @param {Date|string} date - Date object or ISO string
  * @returns {string} MySQL DATETIME format (YYYY-MM-DD HH:MM:SS)
@@ -328,6 +337,7 @@ module.exports = {
   formatSerialNumberDisplay,
   getSystemSetting,
   getPenaltyCreditPerHour,
+  getPenaltyCreditPerDay,
   formatMySQLDateTime,
   combineDateTimeToMySQL,
   calculateHoursDifference,

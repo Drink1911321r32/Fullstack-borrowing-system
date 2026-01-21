@@ -29,16 +29,16 @@ import EquipmentItemsModal from './EquipmentItemsModal';
 
 // คอมโพเนนต์สำหรับแสดงการ์ดสรุปข้อมูลคลัง
 const InventorySummaryCard = ({ title, value, icon, bgColor, textColor, trend, subtitle }) => (
-  <div className={`p-6 rounded-lg shadow-sm ${bgColor} border border-gray-200`}>
+  <div className={`p-3 sm:p-4 md:p-6 rounded-lg sm:rounded-xl shadow-sm ${bgColor} border border-gray-200`}>
     <div className="flex items-center justify-between">
       <div className="flex items-center">
-        <div className={`p-3 rounded-full ${textColor} bg-opacity-20`}>
+        <div className={`p-2 sm:p-2.5 md:p-3 rounded-full ${textColor} bg-opacity-20`}>
           {icon}
         </div>
-        <div className="ml-4">
-          <p className="text-sm font-medium text-gray-500">{title}</p>
-          <p className={`text-2xl font-semibold ${textColor}`}>{value}</p>
-          {subtitle && <p className="text-xs text-gray-400 mt-1">{subtitle}</p>}
+        <div className="ml-2 sm:ml-3 md:ml-4">
+          <p className="text-xs sm:text-sm font-medium text-gray-500">{title}</p>
+          <p className={`text-lg sm:text-xl md:text-2xl font-semibold ${textColor}`}>{value}</p>
+          {subtitle && <p className="text-xs text-gray-400 mt-0.5 sm:mt-1">{subtitle}</p>}
         </div>
       </div>
       {trend && (
@@ -182,7 +182,7 @@ const EquipmentTable = ({ equipment, equipmentItems, equipmentTypes, onEdit, onD
 
       {/* Filters */}
       <div className="px-6 py-4 bg-gray-50 border-b border-gray-200">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">ค้นหา</label>
             <div className="relative">
@@ -1147,7 +1147,7 @@ const InventorySystem = () => {
 
 
       {/* สถิติสรุป */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 sm:gap-4">
         <InventorySummaryCard
           title="อุปกรณ์ทั้งหมด"
           value={inventoryStats.total}

@@ -163,7 +163,7 @@ const DisbursementHistory = () => {
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="min-h-screen bg-gray-50 p-2 sm:p-4 md:p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-6">
@@ -234,34 +234,34 @@ const DisbursementHistory = () => {
           </div>
         </div>
 
-        {/* Filters */}
-        <div className="bg-white rounded-lg shadow mb-6 p-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {/* Filters - Mobile Responsive */}
+        <div className="bg-white rounded-lg shadow mb-4 sm:mb-6 p-3 sm:p-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
             {/* Search */}
-            <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                <FiSearch className="inline mr-2" />
+            <div className="sm:col-span-2">
+              <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">
+                <FiSearch className="inline mr-1 sm:mr-2 w-3 h-3 sm:w-4 sm:h-4" />
                 ค้นหา
               </label>
               <input
                 type="text"
-                placeholder="ค้นหาอุปกรณ์, ชื่อผู้เบิก, อีเมล..."
+                placeholder="ค้นหา..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
               />
             </div>
 
             {/* Status Filter */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                <FiFilter className="inline mr-2" />
+              <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">
+                <FiFilter className="inline mr-1 sm:mr-2 w-3 h-3 sm:w-4 sm:h-4" />
                 สถานะ
               </label>
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
               >
                 <option value="all">ทั้งหมด</option>
                 <option value="Approved">อนุมัติแล้ว/เบิกแล้ว</option>
@@ -270,14 +270,14 @@ const DisbursementHistory = () => {
             </div>
           </div>
 
-          <div className="flex justify-end mt-4">
+          <div className="flex justify-end mt-3 sm:mt-4">
             <button
               onClick={fetchDisbursements}
               disabled={loading}
-              className="flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition disabled:opacity-50"
+              className="flex items-center px-3 sm:px-4 py-2 text-sm sm:text-base bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition disabled:opacity-50"
             >
-              <FiRefreshCw className={`mr-2 ${loading ? 'animate-spin' : ''}`} />
-              รีเฟรช
+              <FiRefreshCw className={`mr-1 sm:mr-2 w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+              <span className="hidden sm:inline">รีเฟรช</span>
             </button>
           </div>
         </div>

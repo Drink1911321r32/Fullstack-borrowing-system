@@ -202,7 +202,7 @@ const SystemSettings = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 md:p-6">
+    <div className="min-h-screen bg-gray-50 p-2 sm:p-4 md:p-6">
       <div className="max-w-5xl mx-auto">
         {/* Header */}
         <div className="mb-6 md:mb-8">

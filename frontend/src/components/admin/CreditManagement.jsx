@@ -226,6 +226,7 @@ const AdminCreditManagement = () => {
   };
 
   const getCreditStatusColor = (credit, initialCredit) => {
+    if (credit < 0) return 'text-red-600'; // ติดลบ
     const percentage = (credit / initialCredit) * 100;
     if (percentage >= 70) return 'text-green-600';
     if (percentage >= 40) return 'text-yellow-600';
@@ -233,6 +234,7 @@ const AdminCreditManagement = () => {
   };
 
   const getCreditBadgeColor = (credit, initialCredit) => {
+    if (credit < 0) return 'bg-red-100 text-red-800'; // ติดลบ
     const percentage = (credit / initialCredit) * 100;
     if (percentage >= 70) return 'bg-green-100 text-green-800';
     if (percentage >= 40) return 'bg-yellow-100 text-yellow-800';
@@ -240,7 +242,7 @@ const AdminCreditManagement = () => {
   };
 
   return (
-    <div className="bg-gray-50 min-h-screen p-6">
+    <div className="bg-gray-50 min-h-screen p-2 sm:p-4 md:p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
@@ -408,14 +410,22 @@ const AdminCreditManagement = () => {
                           <div className="w-32 bg-gray-200 rounded-full h-2 mt-2">
                             <div 
                               className={`h-2 rounded-full ${
+                                user.credit < 0 ? 'bg-red-500' : 
                                 (user.credit / user.initial_credit) * 100 >= 70 ? 'bg-green-500' :
                                 (user.credit / user.initial_credit) * 100 >= 40 ? 'bg-yellow-500' : 'bg-red-500'
                               }`}
-                              style={{ width: `${Math.min(100, (user.credit / user.initial_credit) * 100)}%` }}
+                              style={{ 
+                                width: user.credit < 0 
+                                  ? '100%' 
+                                  : `${Math.min(100, (user.credit / user.initial_credit) * 100)}%` 
+                              }}
                             ></div>
                           </div>
                           <p className="text-xs text-gray-500 mt-1 whitespace-nowrap">
-                            {((user.credit / user.initial_credit) * 100).toFixed(0)}% จาก {user.initial_credit}
+                            {user.credit < 0 
+                              ? `ติดลบ ${Math.abs(user.credit)} เครดิต`
+                              : `${((user.credit / user.initial_credit) * 100).toFixed(0)}% จาก ${user.initial_credit}`
+                            }
                           </p>
                         </div>
                       </td>
@@ -626,7 +636,7 @@ const AdminCreditManagement = () => {
                   <p className="text-2xl font-bold text-blue-600">
                     {creditAction.type === 'add' 
                       ? (parseFloat(selectedUser.credit) + parseFloat(creditAction.amount || 0)).toFixed(2)
-                      : Math.max(0, parseFloat(selectedUser.credit) - parseFloat(creditAction.amount || 0)).toFixed(2)
+                      : (parseFloat(selectedUser.credit) - parseFloat(creditAction.amount || 0)).toFixed(2)
                     }
                   </p>
                 </div>
@@ -716,7 +726,7 @@ const AdminCreditManagement = () => {
                         ? selectedUser.initial_credit
                         : creditAction.type === 'add' 
                           ? (parseFloat(selectedUser.credit) + parseFloat(creditAction.amount || 0)).toFixed(2)
-                          : Math.max(0, parseFloat(selectedUser.credit) - parseFloat(creditAction.amount || 0)).toFixed(2)
+                          : (parseFloat(selectedUser.credit) - parseFloat(creditAction.amount || 0)).toFixed(2)
                       }
                     </span>
                   </div>

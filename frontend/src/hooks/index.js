@@ -2,6 +2,23 @@ import { useState, useEffect } from 'react';
 import { userAPI } from '../api/api';
 import { STORAGE_KEYS } from '../constants';
 
+// ฟังก์ชันตรวจสอบ token expiry
+const isTokenExpired = (token) => {
+  if (!token) return true;
+  
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    const expiry = payload.exp * 1000; // แปลงเป็น milliseconds
+    const now = Date.now();
+    
+    // ตรวจสอบว่า token จะหมดอายุใน 5 นาที
+    return now >= expiry - (5 * 60 * 1000);
+  } catch (error) {
+    console.error('Error parsing token:', error);
+    return true;
+  }
+};
+
 // Custom hook สำหรับจัดการ Authentication ด้วย JWT
 export const useAuth = () => {
   const [user, setUser] = useState(null);
@@ -16,6 +33,15 @@ export const useAuth = () => {
       const storedUser = localStorage.getItem(STORAGE_KEYS.USER);
       
       if (storedToken && storedUser) {
+        // ตรวจสอบว่า token หมดอายุหรือไม่
+        if (isTokenExpired(storedToken)) {
+          console.warn('⚠️ Token expired, clearing auth data');
+          localStorage.removeItem(STORAGE_KEYS.TOKEN);
+          localStorage.removeItem(STORAGE_KEYS.USER);
+          setIsLoading(false);
+          return;
+        }
+        
         try {
           // ตั้งค่า token และ user จาก localStorage
           setToken(storedToken);
@@ -49,9 +75,30 @@ export const useAuth = () => {
     initializeAuth();
   }, [token, skipValidation]);
 
+  // ตรวจสอบ token expiry ทุก 5 นาที
+  useEffect(() => {
+    if (!token) return;
+
+    const checkTokenExpiry = () => {
+      if (isTokenExpired(token)) {
+        console.warn('⚠️ Token expired during session, logging out');
+        logout();
+      }
+    };
+
+    // ตรวจสอบทันทีและทุก 5 นาที
+    const interval = setInterval(checkTokenExpiry, 5 * 60 * 1000);
+    
+    // Cleanup
+    return () => clearInterval(interval);
+  }, [token]);
+
   const login = (userData, authToken) => {
+    // บันทึก token, user data และเวลา login
     localStorage.setItem(STORAGE_KEYS.TOKEN, authToken);
     localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(userData));
+    localStorage.setItem('token_timestamp', Date.now().toString());
+    
     setSkipValidation(true); // ข้าม validation เมื่อ login ใหม่
     setToken(authToken);
     setUser(userData);
@@ -67,6 +114,7 @@ export const useAuth = () => {
       // ลบข้อมูลทั้งหมดจาก localStorage
       localStorage.removeItem(STORAGE_KEYS.TOKEN);
       localStorage.removeItem(STORAGE_KEYS.USER);
+      localStorage.removeItem('token_timestamp');
       setToken(null);
       setUser(null);
     }
@@ -88,6 +136,19 @@ export const useAuth = () => {
     return user?.member_type; // 'student', 'teacher', 'staff'
   };
 
+  const refreshUserData = async () => {
+    try {
+      const response = await userAPI.getUserProfile();
+      if (response.data && response.data.success) {
+        const updatedUser = response.data.data;
+        setUser(updatedUser);
+        localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(updatedUser));
+      }
+    } catch (error) {
+      console.error('Error refreshing user data:', error);
+    }
+  };
+
   return {
     user,
     token,
@@ -97,7 +158,8 @@ export const useAuth = () => {
     isAuthenticated,
     isAdmin,
     isMember,
-    getMemberType
+    getMemberType,
+    refreshUserData
   };
 };
 

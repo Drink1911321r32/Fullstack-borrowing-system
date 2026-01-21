@@ -31,6 +31,7 @@ router.get('/all', protect, admin, notificationController.getAllNotifications);
 router.get('/', protect, notificationController.getUserNotifications);
 router.get('/unread', protect, notificationController.getUnreadNotifications);
 router.put('/:notification_id/read', protect, notificationController.markAsRead);
+router.patch('/:notification_id/read', protect, notificationController.markAsRead); // เพิ่ม PATCH
 router.put('/mark-all-read', protect, notificationController.markAllAsRead);
 router.delete('/:notification_id', protect, notificationController.deleteNotification);
 

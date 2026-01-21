@@ -102,9 +102,9 @@ const processPartialReturnPenalties = async () => {
         continue;
       }
       
-      // หักเครดิต
+      // หักเครดิต (อนุญาตให้ติดลบได้)
       await connection.query(
-        'UPDATE members SET credit = GREATEST(credit - ?, 0) WHERE member_id = ?',
+        'UPDATE members SET credit = credit - ? WHERE member_id = ?',
         [penaltyAmount, record.member_id]
       );
       
@@ -118,11 +118,11 @@ const processPartialReturnPenalties = async () => {
       // บันทึกในตาราง partial_return_penalties
       await connection.query(
         `INSERT INTO partial_return_penalties 
-        (borrowing_id, user_id, penalty_date, missing_quantity, daily_penalty, credit_deducted, balance_after, notes)
+        (borrowing_id, member_id, penalty_date, missing_quantity, daily_penalty, credit_deducted, balance_after, notes)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
         [
           record.transaction_id,
-          record.user_id,
+          record.member_id,
           todayStr,
           missingQty,
           hourlyPenalty,

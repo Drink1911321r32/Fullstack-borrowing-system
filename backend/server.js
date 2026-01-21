@@ -83,6 +83,7 @@ app.use('/api/notifications', require('./services/routes/notificationRoutes'));
 app.use('/api/credit', require('./services/routes/creditRoutes'));
 app.use('/api/cron', require('./services/routes/cronRoutes'));
 app.use('/api', require('./services/routes/facultyMajorRoutes'));
+app.use('/api/auth', require('./services/routes/authRoutes'));
 
 app.get('/', (req, res) => {
   res.json({ message: 'API is running' });

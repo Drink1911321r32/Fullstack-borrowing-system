@@ -1,37 +1,58 @@
-const React = require('react');
-const { renderToStream, Font, Document, Page, Text, View, StyleSheet } = require('@react-pdf/renderer');
-const path = require('path');
+let React, renderToStream, Font, Document, Page, Text, View, StyleSheet;
+let isInitialized = false;
 
-// ลงทะเบียนฟอนต์ภาษาไทย - ใช้ Noto Sans Thai ซึ่งรองรับอักขระไทยครบถ้วนที่สุด
-Font.register({
-  family: 'NotoSansThai',
-  fonts: [
-    {
-      src: path.join(__dirname, '../fonts/NotoSansThai-Regular.ttf'),
-      fontStyle: 'normal',
-      fontWeight: 'normal'
-    },
-    {
-      src: path.join(__dirname, '../fonts/NotoSansThai-Bold.ttf'),
-      fontStyle: 'normal',
-      fontWeight: 'bold'
-    }
-  ]
-});
+// Dynamic import for ES Module
+async function initializePDFLibrary() {
+  if (isInitialized) return;
+  
+  const ReactModule = await import('react');
+  React = ReactModule.default;
+  
+  const PDFModule = await import('@react-pdf/renderer');
+  renderToStream = PDFModule.renderToStream;
+  Font = PDFModule.Font;
+  Document = PDFModule.Document;
+  Page = PDFModule.Page;
+  Text = PDFModule.Text;
+  View = PDFModule.View;
+  StyleSheet = PDFModule.StyleSheet;
+  
+  const path = require('path');
 
-// Register hyphenation callback for Thai - ป้องกันการตัดคำ
-Font.registerHyphenationCallback(word => [word]);
+  // ลงทะเบียนฟอนต์ภาษาไทย - ใช้ Noto Sans Thai ซึ่งรองรับอักขระไทยครบถ้วนที่สุด
+  Font.register({
+    family: 'NotoSansThai',
+    fonts: [
+      {
+        src: path.join(__dirname, '../fonts/NotoSansThai-Regular.ttf'),
+        fontStyle: 'normal',
+        fontWeight: 'normal'
+      },
+      {
+        src: path.join(__dirname, '../fonts/NotoSansThai-Bold.ttf'),
+        fontStyle: 'normal',
+        fontWeight: 'bold'
+      }
+    ]
+  });
 
-// Register emoji fonts for better Unicode support
-Font.registerEmojiSource({
-  format: 'png',
-  url: 'https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/',
-});
+  // Register hyphenation callback for Thai - ป้องกันการตัดคำ
+  Font.registerHyphenationCallback(word => [word]);
+
+  // Register emoji fonts for better Unicode support
+  Font.registerEmojiSource({
+    format: 'png',
+    url: 'https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/',
+  });
+  
+  isInitialized = true;
+}
 
 /**
  * สร้าง PDF รายงานสำหรับ Admin ด้วย @react-pdf/renderer
  */
 const generateAdminReportPDF = async (reportData, dateRange) => {
+  await initializePDFLibrary();
   try {
     const AdminPDF = () =>
       React.createElement(
@@ -221,6 +242,7 @@ const generateAdminReportPDF = async (reportData, dateRange) => {
  * สร้าง PDF รายงานสำหรับ User ด้วย @react-pdf/renderer
  */
 const generateUserReportPDF = async (reportData, dateRange, userData) => {
+  await initializePDFLibrary();
   try {
     const UserPDF = () =>
       React.createElement(

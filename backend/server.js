@@ -13,6 +13,9 @@ const logger = require('./utils/logger');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// Trust proxy for Railway/Vercel
+app.set('trust proxy', 1);
+
 // CORS
 const allowedOrigins = [
   'http://localhost:5173',
